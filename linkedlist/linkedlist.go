@@ -43,9 +43,9 @@ func (l *SinglyLinkedList) Find(obj *model.Object) bool {
 
 // DoublyLinkedList - struct - DoublyLinkedList
 type DoublyLinkedList struct {
+	Current *DoubleNode
 	Head    *DoubleNode
 	Tail    *DoubleNode
-	Current *DoubleNode
 }
 
 // DoubleNode :: struct :: Container struct for *model.Object nodes
