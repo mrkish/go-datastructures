@@ -1,6 +1,9 @@
 package linkedlist
 
-import "go-datastructures/model"
+import (
+	"errors"
+	"go-datastructures/model"
+)
 
 // SinglyLinkedList - struct - Singly-Linked LinkedList
 type SinglyLinkedList struct {
@@ -25,6 +28,17 @@ func (l *SinglyLinkedList) Add(obj *model.Object) error {
 	}
 	l.Head = newItem
 	return nil
+}
+
+// Find -- func -- find an object in the list
+func (l *SinglyLinkedList) Find(obj *model.Object) bool {
+	current = l.Head
+	for current != nil {
+		if current.Value == obj {
+			return true
+		}
+		current = current.Next
+	}
 }
 
 // DoublyLinkedList - struct - DoublyLinkedList
@@ -68,4 +82,40 @@ func (l *DoublyLinkedList) AddTail(obj *model.Object) error {
 	l.Tail.Next = newItem
 	l.Tail = newItem
 	return nil
+}
+
+// Find -- func -- find an object in the list
+func (l *SinglyLinkedList) Find(obj *model.Object) bool {
+	current = l.Head
+	for current != nil {
+		if current.Value == obj {
+			return true
+		}
+		current = current.Next
+	}
+}
+
+// Find -- func -- find an object in the list
+func (l *DoublyLinkedList) Find(obj *model.Object) bool {
+	current = l.Head
+	for current != nil {
+		if current.Value == obj {
+			return true
+		}
+		current = current.Next
+	}
+}
+
+// Remove -- func -- find an object in the list
+func (l *DoublyLinkedList) Remove(obj *model.Object) error {
+	if !l.Find(obj) {
+		return errors.New("object not in list")
+	}
+	current = l.Head
+	for current != nil {
+		if current.Value == obj {
+			return true
+		}
+		current = current.Next
+	}
 }
