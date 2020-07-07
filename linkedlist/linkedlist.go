@@ -101,7 +101,10 @@ func (l *DoublyLinkedList) AddTail(obj model.Object) error {
 		Value:    obj,
 		Previous: l.Tail,
 	}
+	// Looks weird, but updating the Next reference to to previous tail
+	// before the List's tail is actually updated.
 	l.Tail.Next = newItem
+	// Update the List's Tail to be the new Node
 	l.Tail = newItem
 	return nil
 }
