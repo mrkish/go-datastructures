@@ -67,10 +67,10 @@ func TestSinglyLinkedList_Find(t *testing.T) {
 			var got model.Object
 			var found bool
 			if got, found = l.Find(obj); found != tt.found {
-				t.Errorf("SinglyLinkedList.Find() = %v, want %v", got, tt.found)
+				t.Errorf("SinglyLinkedList.Find() object not found in list")
 			}
-			if !reflect.DeepEqual(got, obj) {
-				t.Errorf("SinglyLinkedList.Find() = %v, want %v", got, obj)
+			if tt.found && !reflect.DeepEqual(got, obj) {
+				t.Errorf("SinglyLinkedList.Find() found didn't match want = %v, want %v", got, obj)
 			}
 
 		})
