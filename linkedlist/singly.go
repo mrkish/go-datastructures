@@ -7,7 +7,7 @@ import (
 	"go-datastructures/model"
 )
 
-// SinglyLinkedList - struct - Singly-Linked LinkedList
+// SinglyLinkedList :: struct :: Singly-Linked LinkedList
 type SinglyLinkedList struct {
 	Current *Node
 	Head    *Node
@@ -23,28 +23,27 @@ type Node struct {
 // - Previous Head still points towards it's own Next
 // - New Node being added to the front has the Next point towards the previous Head (in constructor)
 // - List then accepts the new node as the current Head
-func (l *SinglyLinkedList) Add(obj model.Object) error {
+func (l *SinglyLinkedList) Add(obj model.Object) {
 	newItem := &Node{
 		Value: obj,
 		Next:  l.Head,
 	}
 	l.Head = newItem
-	return nil
 }
 
-// Find :: func :: find an object in the list
-func (l *SinglyLinkedList) Find(obj model.Object) bool {
+// Find :: func :: Find an object in the list
+func (l *SinglyLinkedList) Find(obj model.Object) (model.Object, bool) {
 	current := l.Head
 	for current != nil {
 		if reflect.DeepEqual(current.Value, obj) {
-			return true
+			return current.Value, true
 		}
 		current = current.Next
 	}
-	return false
+	return model.Object{}, false
 }
 
-// Remove :: func :: find an object in the list
+// Remove :: func :: Remove an object from the list
 // Unfortunately since the SinglyLinkedList doesn't have Previous references,
 // the code for the Remove method must re-implement the logic for Find to keep
 // the previous node so that reference can be updated to the found node's Next.
@@ -52,6 +51,8 @@ func (l *SinglyLinkedList) Remove(obj model.Object) error {
 	current := l.Head
 	var previous *Node
 	for current != nil {
+		// I don't like using DeepEqual here but without a specific typye
+		// or another way to check equality, here we are.
 		if reflect.DeepEqual(current.Value, obj) {
 			// Set the previous node to point ahead of the current position
 			previous.Next = current.Next

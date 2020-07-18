@@ -2,6 +2,7 @@ package linkedlist
 
 import (
 	"errors"
+	"reflect"
 
 	"go-datastructures/model"
 )
@@ -53,26 +54,27 @@ func (l *DoublyLinkedList) AddTail(obj model.Object) error {
 }
 
 // Find :: func :: find an object in the list
-func (l *DoublyLinkedList) Find(obj model.Object) (*DoubleNode, bool) {
+func (l *DoublyLinkedList) Find(obj model.Object) (model.Object, bool) {
 	current := l.Head
 	for current != nil {
-		if current.Value == obj {
-			return current, true
+		if reflect.DeepEqual(current.Value, obj) {
+			return current.Value, true
 		}
 		current = current.Next
 	}
-	return nil, false
+	return model.Object{}, false
 }
 
 // Remove :: func :: find an object in the list
 // This implementation gets to be simpler because the reference to the Previous
 // is kept in the DoubleNode struct.
 func (l *DoublyLinkedList) Remove(obj model.Object) error {
-	if node, found := l.Find(obj); !found {
+	_, found := l.Find(obj)
+	if !found {
 		return errors.New("object not in list")
-	} else {
-		node.Previous.Next = node.Next
-		node.Next.Previous = node.Previous
 	}
+	node := l.Current
+	node.Previous.Next = node.Next
+	node.Next.Previous = node.Previous
 	return nil
 }
