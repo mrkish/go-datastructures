@@ -6,19 +6,22 @@ import (
 	"go-datastructures/model"
 )
 
+// Stack :: struct :: FIFO collection
 type Stack struct {
 	List *linkedlist.SinglyLinkedList
 }
 
+// Pop :: func :: returns the first value in the Stack,
+// and removes that value from the embedded LinkedList
 func (s *Stack) Pop() (model.Object, error) {
-	out := s.List.Head.Value
-	err := s.List.Remove(out)
-	if err != nil {
-		return model.Object{}, errors.New("List is empty!")
+	if s.List.Head != nil {
+		val := s.List.Head.Value
+		return val, s.List.Remove(val)
 	}
-	return out, nil
+	return model.Object{}, errors.New("list is empty!")
 }
 
+// Add :: func :: Adds a value to the Stack in first position
 func (s *Stack) Add(obj model.Object) {
 	s.List.Add(obj)
 }

@@ -55,7 +55,7 @@ func TestSinglyLinkedList_Find(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := &SinglyLinkedList{}
-			l.addNode(buildSingleNodes(tt.values)...)
+			l.AddNode(BuildSingleNodes(tt.values)...)
 			obj := model.Object{Value: tt.search}
 			var found bool
 			if found = l.Find(obj); found != tt.found {
@@ -213,12 +213,4 @@ func TestSinglyLinkedList_HasNext(t *testing.T) {
 			}
 		})
 	}
-}
-
-func buildSingleNodes(in []string) []*Node {
-	var out []*Node
-	for _, val := range in {
-		out = append(out, &Node{Value: model.Object{Value: val}})
-	}
-	return out
 }

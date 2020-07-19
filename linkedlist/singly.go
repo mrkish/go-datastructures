@@ -29,18 +29,18 @@ func (l *SinglyLinkedList) Add(obj model.Object) {
 		Next:  l.Head,
 	}
 	l.Head = newItem
+	// l.Current = newItem
 }
 
 // Find :: func :: Find an object in the list
 func (l *SinglyLinkedList) Find(obj model.Object) bool {
 	l.Current = l.Head
-	if l.Current.Next == nil {
+	if l.Current == nil {
+		return false
+	}
+	if l.Current != nil && l.Current.Next == nil {
 		return reflect.DeepEqual(l.Current.Value, obj)
 	}
-	// Check first element manually, since HasNext will advance Current
-	// if firstMatch := reflect.DeepEqual(l.Current.Value, obj); firstMatch {
-	// 	return firstMatch
-	// }
 	// Iterate through rest of list
 	for l.HasNext() {
 		if reflect.DeepEqual(l.Current.Value, obj) {
@@ -58,6 +58,9 @@ func (l *SinglyLinkedList) Remove(obj model.Object) error {
 		if reflect.DeepEqual(l.Current.Value, obj) {
 			if previous != nil {
 				previous.Next = l.Current.Next
+			} else {
+				l.Head = nil
+				l.Current = nil
 			}
 			return nil
 		}
@@ -77,14 +80,14 @@ func (l *SinglyLinkedList) HasNext() bool {
 	}
 	current := l.Current
 	// Advance Current if Next isn't nil
-	if l.Current.Next != nil {
+	if l.Current != nil && l.Current.Next != nil {
 		l.Current = l.Current.Next
 	}
 	return current.Next != nil
 }
 
 // Helper function to build list or add new nodes to existing list
-func (l *SinglyLinkedList) addNode(n ...*Node) {
+func (l *SinglyLinkedList) AddNode(n ...*Node) {
 	// Determine position in list before iterating
 	if l.Current == nil {
 		l.Current = l.Head
@@ -107,4 +110,12 @@ func (l *SinglyLinkedList) addNode(n ...*Node) {
 			l.Current = node
 		}
 	}
+}
+
+func BuildSingleNodes(in []string) []*Node {
+	var out []*Node
+	for _, val := range in {
+		out = append(out, &Node{Value: model.Object{Value: val}})
+	}
+	return out
 }
