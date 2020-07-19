@@ -66,10 +66,10 @@ func (l *DoublyLinkedList) AddTail(obj model.Object) {
 // Find :: func :: find an object in the list
 func (l *DoublyLinkedList) Find(obj model.Object) bool {
 	l.Current = l.Head
-	if l.Current.Next == nil {
-		return reflect.DeepEqual(l.Current.Value, obj)
+	if l.Current == nil {
+		return false
 	}
-	// // Check first element manually, since HasNext will advance Current
+	// Check first element manually, since HasNext will advance Current
 	if firstMatch := reflect.DeepEqual(l.Current.Value, obj); firstMatch {
 		return firstMatch
 	}
@@ -93,7 +93,12 @@ func (l *DoublyLinkedList) Remove(obj model.Object) error {
 	if node == l.Head {
 		// Removing the Head
 		l.Head = node.Next
-		l.Head.Previous = nil
+		if l.Head != nil {
+			l.Head.Previous = nil
+		} else {
+			// This was the last item in the list
+			l.Tail = nil
+		}
 	} else if node == l.Tail {
 		// Removing the Tail
 		l.Tail = node.Previous
@@ -111,7 +116,9 @@ func (l *DoublyLinkedList) Remove(obj model.Object) error {
 func (l *DoublyLinkedList) HasNext() bool {
 	if l.Current == nil {
 		l.Current = l.Head
-		return l.Current.Next != nil
+		if l.Current != nil {
+			return l.Current.Next != nil
+		}
 	}
 	current := l.Current
 	// Advance Current if Next isn't nil
@@ -141,7 +148,7 @@ func (l *DoublyLinkedList) HasPrevious() bool {
 }
 
 // Helper function to build list or add new nodes to existing list
-func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
+func (l *DoublyLinkedList) AddNode(n ...*DoubleNode) {
 	// Determine position in list before iterating
 	if l.Head != nil && l.Tail != nil {
 		l.checkHeadTail()
@@ -150,8 +157,8 @@ func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
 	} else if l.Current == nil && l.Head != nil {
 		l.checkHeadTail()
 		// Advance to last item in list
-		// for l.HasNext() {
-		// }
+		for l.HasNext() {
+		}
 		if l.Tail == nil {
 			l.Tail = l.Current
 			l.Current = l.Tail
@@ -187,4 +194,12 @@ func (l DoublyLinkedList) checkHeadTail() {
 		l.Head.Next = l.Tail
 		l.Tail.Previous = l.Head
 	}
+}
+
+func BuildDoubleNodes(in []string) []*DoubleNode {
+	var out []*DoubleNode
+	for _, val := range in {
+		out = append(out, &DoubleNode{Value: model.Object{Value: val}})
+	}
+	return out
 }

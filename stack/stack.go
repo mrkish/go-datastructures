@@ -18,7 +18,7 @@ func (s *Stack) Pop() (model.Object, error) {
 		val := s.List.Head.Value
 		return val, s.List.Remove(val)
 	}
-	return model.Object{}, errors.New("list is empty!")
+	return model.Object{}, errors.New("stack is empty!")
 }
 
 // Add :: func :: Adds a value to the Stack in first position

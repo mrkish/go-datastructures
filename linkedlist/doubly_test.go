@@ -53,7 +53,7 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := &DoublyLinkedList{}
-			l.addNode(buildDoubleNodes(tt.values)...)
+			l.AddNode(BuildDoubleNodes(tt.values)...)
 			obj := model.Object{Value: tt.search}
 			found := l.Find(obj)
 			if found != tt.found {
@@ -131,11 +131,11 @@ func TestDoublyLinkedList_AddTail(t *testing.T) {
 		},
 		{
 			name: "tail replaces existing successfully, links stay connected",
-			nodes: buildDoubleNodes([]string{
+			nodes: BuildDoubleNodes([]string{
 				"first",
 				"last",
 			}),
-			wantNodes: buildDoubleNodes([]string{
+			wantNodes: BuildDoubleNodes([]string{
 				"first",
 				"second",
 				"third",
@@ -151,7 +151,7 @@ func TestDoublyLinkedList_AddTail(t *testing.T) {
 				Tail:    tt.fields.Tail,
 			}
 			if tt.nodes != nil {
-				l.addNode(tt.nodes...)
+				l.AddNode(tt.nodes...)
 			}
 
 			obj := model.Object{Value: tt.value}
@@ -161,7 +161,7 @@ func TestDoublyLinkedList_AddTail(t *testing.T) {
 			}
 			if tt.nodes != nil {
 				wantList := &DoublyLinkedList{}
-				wantList.addNode(tt.wantNodes...)
+				wantList.AddNode(tt.wantNodes...)
 
 				if reflect.DeepEqual(l, wantList) {
 					t.Errorf("AddTail() failed to maintain links in list as expected, got: %v want: %v", l, wantList)
@@ -242,7 +242,7 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 				Head:    tt.fields.Head,
 				Tail:    tt.fields.Tail,
 			}
-			l.addNode(buildDoubleNodes(tt.values)...)
+			l.AddNode(BuildDoubleNodes(tt.values)...)
 			i := 0
 			for l.HasNext() {
 				var previous model.Object
@@ -251,7 +251,7 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 					previous = l.Current.Previous.Value
 					wantPrevious := tt.values[i-1]
 					if previous.Value != wantPrevious {
-						t.Errorf("addNode() mismatched values: previous: %v, expected: %v", previous.Value, wantPrevious)
+						t.Errorf("AddNode() mismatched values: previous: %v, expected: %v", previous.Value, wantPrevious)
 					}
 				}
 				if l.Current.Next != nil {
@@ -261,21 +261,13 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 						wantNext = tt.values[i+1]
 					}
 					if next.Value == wantNext {
-						t.Errorf("addNode() mismatched values: next: %v, expected: %v", next.Value, wantNext)
+						t.Errorf("AddNode() mismatched values: next: %v, expected: %v", next.Value, wantNext)
 					}
 				}
 				i++
 			}
 		})
 	}
-}
-
-func buildDoubleNodes(in []string) []*DoubleNode {
-	var out []*DoubleNode
-	for _, val := range in {
-		out = append(out, &DoubleNode{Value: model.Object{Value: val}})
-	}
-	return out
 }
 
 func TestDoublyLinkedList_Remove(t *testing.T) {
@@ -347,8 +339,8 @@ func TestDoublyLinkedList_Remove(t *testing.T) {
 				Tail:    tt.fields.Tail,
 			}
 			expected := &DoublyLinkedList{}
-			l.addNode(buildDoubleNodes(tt.values)...)
-			expected.addNode(buildDoubleNodes(tt.expectedList)...)
+			l.AddNode(BuildDoubleNodes(tt.values)...)
+			expected.AddNode(BuildDoubleNodes(tt.expectedList)...)
 			if err := l.Remove(tt.args.obj); (err != nil) != tt.wantErr {
 				t.Errorf("DoublyLinkedList.Remove() error = %v, wantErr %v", err, tt.wantErr)
 			}

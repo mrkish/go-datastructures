@@ -38,8 +38,9 @@ func (l *SinglyLinkedList) Find(obj model.Object) bool {
 	if l.Current == nil {
 		return false
 	}
-	if l.Current != nil && l.Current.Next == nil {
-		return reflect.DeepEqual(l.Current.Value, obj)
+	// Check first element manually, since HasNext will advance Current
+	if firstMatch := reflect.DeepEqual(l.Current.Value, obj); firstMatch {
+		return firstMatch
 	}
 	// Iterate through rest of list
 	for l.HasNext() {
