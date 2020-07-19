@@ -89,24 +89,71 @@ func (l *DoublyLinkedList) Remove(obj model.Object) error {
 	return nil
 }
 
-// Helper function
-func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
-	for _, node := range n {
-		// There's an existing head, start at the back
+// HasNext :: func :: returns true if the next Node is not nil
+func (l *DoublyLinkedList) HasNext() bool {
+	// Check Current/Head to verify the list has Nodes
+	// Check if Current isn't set
+	if l.Current == nil {
+		// If true, then check if Head is nil
 		if l.Head != nil {
-			if l.Tail != nil {
-				l.Tail.Next = node
-			} else {
-				l.Tail = node
-			}
-			node.Previous = l.Tail
-			l.Tail = node
-			if l.Head.Next == nil {
-				l.Head.Next = l.Tail
-			}
-		} else if l.Head == nil {
-			// New list, start at the front
+			l.Current = l.Head
+		} else {
+			// No Head or Current, list must be empty
+			return false
+		}
+	}
+	return l.Current.Next != nil
+}
+
+// HasPrevious :: func :: returns true if the previous Node is not nil
+func (l *DoublyLinkedList) HasPrevious() bool {
+	// Check Current/Tail to verify the list has Nodes
+	// Check if Current isn't set
+	if l.Current == nil {
+		// If true, then check if Head is nil
+		if l.Tail != nil {
+			l.Current = l.Tail
+		} else {
+			// No Tail or Current, list must be empty
+			return false
+		}
+	}
+	return l.Current.Previous != nil
+}
+
+// Helper function to build list or add new nodes to existing list
+func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
+	// Determine position in list before iterating
+	if l.Current == nil && l.Head != nil {
+		l.Current = l.Head
+	} else if l.Head != nil && l.Current == nil {
+		l.Head = l.Current
+	} else if l.Head == nil && l.Tail != nil {
+		l.Head = l.Tail
+		l.Current = l.Head
+	} else if l.Head != nil && l.Tail != nil {
+		// Start at the end of the list
+		l.Current = l.Tail
+	}
+	for i, node := range n {
+		if i == 0 && l.Current == nil {
+			// Set current if list is empty
+			l.Current = node
+			continue
+		} else {
+			node.Previous = l.Current
+			l.Current.Next = node
+			l.Current = node
+		}
+		// Set Head if first node and Head is unset
+		if i == 0 && l.Head == nil {
 			l.Head = node
+		}
+		// Set Tail if last node in the list
+		// We're not adding anywhere at the end;
+		// what we've added must be the Tail
+		if i == len(n)-1 {
+			l.Tail = node
 		}
 	}
 }

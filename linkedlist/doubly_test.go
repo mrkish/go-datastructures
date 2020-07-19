@@ -1,6 +1,7 @@
 package linkedlist
 
 import (
+	"fmt"
 	"go-datastructures/model"
 	"reflect"
 	"testing"
@@ -178,6 +179,113 @@ func TestDoublyLinkedList_AddTail(t *testing.T) {
 				if reflect.DeepEqual(l, wantList) {
 					t.Errorf("AddTail() failed to maintain links in list as expected, got: %v want: %v", l, wantList)
 				}
+			}
+		})
+	}
+}
+
+func TestDoublyLinkedList_addNode(t *testing.T) {
+	type fields struct {
+		Current *DoubleNode
+		Head    *DoubleNode
+		Tail    *DoubleNode
+	}
+	type args struct {
+		n []*DoubleNode
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "list is built with all nodes connected",
+			args: args{
+				n: []*DoubleNode{
+					{
+						Value: model.Object{
+							Value: "first",
+						},
+					},
+					{
+						Value: model.Object{
+							Value: "second",
+						},
+					},
+					{
+						Value: model.Object{
+							Value: "third",
+						},
+					},
+					{
+						Value: model.Object{
+							Value: "fourth",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "existing list is added on to as expected",
+			fields: fields{
+				Current: nil,
+				Head: &DoubleNode{
+					Value: model.Object{Value: "first"},
+				},
+			},
+			args: args{
+				n: []*DoubleNode{
+					{
+						Value: model.Object{
+							Value: "second",
+						},
+					},
+					{
+						Value: model.Object{
+							Value: "third",
+						},
+					},
+					{
+						Value: model.Object{
+							Value: "fourth",
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := &DoublyLinkedList{
+				Current: tt.fields.Current,
+				Head:    tt.fields.Head,
+				Tail:    tt.fields.Tail,
+			}
+			l.addNode(tt.args.n...)
+			fmt.Println(fmt.Sprintf("created list: %+v", l))
+			i := 0
+			for l.HasNext() {
+				fmt.Println(fmt.Sprintf("current node: %+v", l.Current))
+				var previous model.Object
+				var next model.Object
+				if l.Current.Previous != nil {
+					previous = l.Current.Previous.Value
+					wantPrevious := tt.args.n[i-1].Value.Value
+					if previous.Value != wantPrevious {
+						t.Errorf("addNode() mismatched values: previous: %v, expected: %v", previous.Value, wantPrevious)
+					}
+				}
+				if l.Current.Next != nil {
+					next = l.Current.Next.Value
+					var wantNext interface{}
+					if i+1 > len(tt.args.n) {
+						wantNext = tt.args.n[i+1].Value.Value
+					}
+					if next.Value == wantNext {
+						t.Errorf("addNode() mismatched values: next: %v, expected: %v", next.Value, wantNext)
+					}
+				}
+				i++
 			}
 		})
 	}
