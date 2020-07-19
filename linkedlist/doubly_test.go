@@ -7,17 +7,11 @@ import (
 )
 
 func TestDoublyLinkedList_Find(t *testing.T) {
-	type fields struct {
-		Current *DoubleNode
-		Head    *DoubleNode
-		Tail    *DoubleNode
-	}
 	type args struct {
 		obj model.Object
 	}
 	tests := []struct {
 		name   string
-		fields fields
 		search string
 		values []string
 		found  bool
@@ -28,7 +22,6 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 				"first",
 			},
 			search: "last",
-			found:  false,
 		},
 		{
 			name: "value is found",
@@ -47,16 +40,22 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 			search: "second",
 			found:  true,
 		},
+		{
+			name: "first value is found in list with multiple nodes",
+			values: []string{
+				"first",
+				"second",
+			},
+			search: "first",
+			found:  true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := &DoublyLinkedList{}
-			l.addNode(buildNodes(tt.values)...)
+			l.addNode(buildDoubleNodes(tt.values)...)
 			obj := model.Object{Value: tt.search}
-			got, found := l.Find(obj)
-			if tt.found && !reflect.DeepEqual(got, obj) {
-				t.Errorf("DoublyLinkedList.Find() got = %v, want %v", got, obj)
-			}
+			found := l.Find(obj)
 			if found != tt.found {
 				t.Error("DoublyLinkedList.Find() item not found in list")
 			}
@@ -132,11 +131,11 @@ func TestDoublyLinkedList_AddTail(t *testing.T) {
 		},
 		{
 			name: "tail replaces existing successfully, links stay connected",
-			nodes: buildNodes([]string{
+			nodes: buildDoubleNodes([]string{
 				"first",
 				"last",
 			}),
-			wantNodes: buildNodes([]string{
+			wantNodes: buildDoubleNodes([]string{
 				"first",
 				"second",
 				"third",
@@ -243,7 +242,7 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 				Head:    tt.fields.Head,
 				Tail:    tt.fields.Tail,
 			}
-			l.addNode(buildNodes(tt.values)...)
+			l.addNode(buildDoubleNodes(tt.values)...)
 			i := 0
 			for l.HasNext() {
 				var previous model.Object
@@ -271,7 +270,7 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 	}
 }
 
-func buildNodes(in []string) []*DoubleNode {
+func buildDoubleNodes(in []string) []*DoubleNode {
 	var out []*DoubleNode
 	for _, val := range in {
 		out = append(out, &DoubleNode{Value: model.Object{Value: val}})
@@ -348,12 +347,12 @@ func TestDoublyLinkedList_Remove(t *testing.T) {
 				Tail:    tt.fields.Tail,
 			}
 			expected := &DoublyLinkedList{}
-			l.addNode(buildNodes(tt.values)...)
-			expected.addNode(buildNodes(tt.expectedList)...)
+			l.addNode(buildDoubleNodes(tt.values)...)
+			expected.addNode(buildDoubleNodes(tt.expectedList)...)
 			if err := l.Remove(tt.args.obj); (err != nil) != tt.wantErr {
 				t.Errorf("DoublyLinkedList.Remove() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			_, found := l.Find(tt.args.obj)
+			found := l.Find(tt.args.obj)
 			if found {
 				t.Errorf("DobulyLinkedList.Remove() item not removed from list!")
 			}
@@ -383,9 +382,6 @@ func TestDoublyLinkedList_HasNext(t *testing.T) {
 					Next: &DoubleNode{
 						Value: model.Object{Value: "second"},
 					},
-				},
-				Tail: &DoubleNode{
-					Value: model.Object{Value: "second"},
 				},
 			},
 			want: true,

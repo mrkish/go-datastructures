@@ -32,34 +32,79 @@ func (l *SinglyLinkedList) Add(obj model.Object) {
 }
 
 // Find :: func :: Find an object in the list
-func (l *SinglyLinkedList) Find(obj model.Object) (model.Object, bool) {
-	current := l.Head
-	for current != nil {
-		if reflect.DeepEqual(current.Value, obj) {
-			return current.Value, true
-		}
-		current = current.Next
+func (l *SinglyLinkedList) Find(obj model.Object) bool {
+	l.Current = l.Head
+	if l.Current.Next == nil {
+		return reflect.DeepEqual(l.Current.Value, obj)
 	}
-	return model.Object{}, false
+	// Check first element manually, since HasNext will advance Current
+	// if firstMatch := reflect.DeepEqual(l.Current.Value, obj); firstMatch {
+	// 	return firstMatch
+	// }
+	// Iterate through rest of list
+	for l.HasNext() {
+		if reflect.DeepEqual(l.Current.Value, obj) {
+			return true
+		}
+	}
+	return false
 }
 
 // Remove :: func :: Remove an object from the list
-// Unfortunately since the SinglyLinkedList doesn't have Previous references,
-// the code for the Remove method must re-implement the logic for Find to keep
-// the previous node so that reference can be updated to the found node's Next.
 func (l *SinglyLinkedList) Remove(obj model.Object) error {
-	current := l.Head
+	l.Current = l.Head
 	var previous *Node
-	for current != nil {
-		// I don't like using DeepEqual here but without a specific typye
-		// or another way to check equality, here we are.
-		if reflect.DeepEqual(current.Value, obj) {
-			// Set the previous node to point ahead of the current position
-			previous.Next = current.Next
+	for l.Current != nil {
+		if reflect.DeepEqual(l.Current.Value, obj) {
+			if previous != nil {
+				previous.Next = l.Current.Next
+			}
 			return nil
 		}
-		previous = current
-		current = current.Next
+		previous = l.Current
+		l.Current = l.Current.Next
 	}
-	return errors.New("object not found")
+	return errors.New("object not found in list")
+}
+
+// HasNext :: func :: returns true if the next Node is not nil
+// Since this is being use to iterate over lists, it also
+// advances the Current marker.
+func (l *SinglyLinkedList) HasNext() bool {
+	// Check if Current isn't set
+	if l.Current == nil {
+		l.Current = l.Head
+	}
+	current := l.Current
+	// Advance Current if Next isn't nil
+	if l.Current.Next != nil {
+		l.Current = l.Current.Next
+	}
+	return current.Next != nil
+}
+
+// Helper function to build list or add new nodes to existing list
+func (l *SinglyLinkedList) addNode(n ...*Node) {
+	// Determine position in list before iterating
+	if l.Current == nil {
+		l.Current = l.Head
+	}
+	if l.Current != nil {
+		// Advance to last link
+		for l.HasNext() {
+
+		}
+	}
+	// Current has been set, iterate to add Nodes
+	for i, node := range n {
+		if i == 0 && l.Current == nil {
+			// Set current if list is empty
+			l.Current = node
+			l.Head = node
+			continue
+		} else {
+			l.Current.Next = node
+			l.Current = node
+		}
+	}
 }
