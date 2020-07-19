@@ -1,7 +1,6 @@
 package linkedlist
 
 import (
-	"fmt"
 	"go-datastructures/model"
 	"reflect"
 	"testing"
@@ -262,10 +261,8 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 				Tail:    tt.fields.Tail,
 			}
 			l.addNode(tt.args.n...)
-			fmt.Println(fmt.Sprintf("created list: %+v", l))
 			i := 0
 			for l.HasNext() {
-				fmt.Println(fmt.Sprintf("current node: %+v", l.Current))
 				var previous model.Object
 				var next model.Object
 				if l.Current.Previous != nil {
