@@ -26,31 +26,41 @@ type DoubleNode struct {
 // - Previous Head.Previous points to new Head
 // - New Node being added to the front has the Next point towards the previous Head
 // - List then accepts the new node as the current Head
-func (l *DoublyLinkedList) AddHead(obj model.Object) error {
+func (l *DoublyLinkedList) AddHead(obj model.Object) {
 	newItem := &DoubleNode{
 		Value: obj,
 		Next:  l.Head,
 	}
-	l.Head.Previous = newItem
+	oldHead := l.Head
+	if oldHead != nil {
+		l.Head.Previous = newItem
+		if oldHead.Next == l.Tail {
+			l.Tail = l.Head
+		}
+	}
 	l.Head = newItem
-	return nil
+	// If this is the only item, it's also the tail
+	if l.Tail == nil {
+		l.Tail = newItem
+	}
 }
 
 // AddTail :: func :: Adds a new node to the LinkedList
 // - Previous Tail's Next is updated to new Node (in constructor)
 // - New Node.Previous points back to the old Tail
 // - LinkedList updates current tail as the new Node
-func (l *DoublyLinkedList) AddTail(obj model.Object) error {
+func (l *DoublyLinkedList) AddTail(obj model.Object) {
 	newItem := &DoubleNode{
 		Value:    obj,
 		Previous: l.Tail,
 	}
 	// Looks weird, but updating the Next reference to to previous tail
 	// before the List's tail is actually updated.
-	l.Tail.Next = newItem
+	if l.Tail != nil {
+		l.Tail.Next = newItem
+	}
 	// Update the List's Tail to be the new Node
 	l.Tail = newItem
-	return nil
 }
 
 // Find :: func :: find an object in the list
@@ -77,4 +87,26 @@ func (l *DoublyLinkedList) Remove(obj model.Object) error {
 	node.Previous.Next = node.Next
 	node.Next.Previous = node.Previous
 	return nil
+}
+
+// Helper function
+func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
+	for _, node := range n {
+		// There's an existing head, start at the back
+		if l.Head != nil {
+			if l.Tail != nil {
+				l.Tail.Next = node
+			} else {
+				l.Tail = node
+			}
+			node.Previous = l.Tail
+			l.Tail = node
+			if l.Head.Next == nil {
+				l.Head.Next = l.Tail
+			}
+		} else if l.Head == nil {
+			// New list, start at the front
+			l.Head = node
+		}
+	}
 }
