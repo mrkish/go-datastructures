@@ -18,52 +18,41 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		value  string
-		want   string
+		search string
+		values []string
 		found  bool
 	}{
 		{
 			name: "value not found",
-			fields: fields{
-				Head: &DoubleNode{
-					Value: model.Object{Value: "first"},
-				},
+			values: []string{
+				"first",
 			},
-			value: "last",
-			found: false,
+			search: "last",
+			found:  false,
 		},
 		{
 			name: "value is found",
-			fields: fields{
-				Head: &DoubleNode{
-					Value: model.Object{Value: "first"},
-				},
+			values: []string{
+				"first",
 			},
-			value: "first",
-			found: true,
+			search: "first",
+			found:  true,
 		},
 		{
 			name: "value is found in list with multiple nodes",
-			fields: fields{
-				Head: &DoubleNode{
-					Value: model.Object{Value: "first"},
-					Next: &DoubleNode{
-						Value: model.Object{Value: "second"},
-					},
-				},
+			values: []string{
+				"first",
+				"second",
 			},
-			value: "second",
-			found: true,
+			search: "second",
+			found:  true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := &DoublyLinkedList{
-				Current: tt.fields.Current,
-				Head:    tt.fields.Head,
-				Tail:    tt.fields.Tail,
-			}
-			obj := model.Object{Value: tt.value}
+			l := &DoublyLinkedList{}
+			l.addNode(buildNodes(tt.values)...)
+			obj := model.Object{Value: tt.search}
 			got, found := l.Find(obj)
 			if tt.found && !reflect.DeepEqual(got, obj) {
 				t.Errorf("DoublyLinkedList.Find() got = %v, want %v", got, obj)
@@ -288,4 +277,192 @@ func buildNodes(in []string) []*DoubleNode {
 		out = append(out, &DoubleNode{Value: model.Object{Value: val}})
 	}
 	return out
+}
+
+func TestDoublyLinkedList_Remove(t *testing.T) {
+	type fields struct {
+		Current *DoubleNode
+		Head    *DoubleNode
+		Tail    *DoubleNode
+	}
+	type args struct {
+		obj model.Object
+	}
+	tests := []struct {
+		name         string
+		values       []string
+		expectedList []string
+		fields       fields
+		args         args
+		wantErr      bool
+	}{
+		{
+			name: "middle link is removed",
+			values: []string{
+				"first",
+				"second",
+				"third",
+			},
+			expectedList: []string{
+				"first",
+				"third",
+			},
+			args: args{
+				obj: model.Object{Value: "second"},
+			},
+		},
+		{
+			name: "first link is removed",
+			values: []string{
+				"first",
+				"second",
+				"third",
+			},
+			expectedList: []string{
+				"second",
+				"third",
+			},
+			args: args{
+				obj: model.Object{Value: "first"},
+			},
+		},
+		{
+			name: "last link is removed",
+			values: []string{
+				"first",
+				"second",
+			},
+			expectedList: []string{
+				"first",
+			},
+			args: args{
+				obj: model.Object{Value: "second"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := &DoublyLinkedList{
+				Current: tt.fields.Current,
+				Head:    tt.fields.Head,
+				Tail:    tt.fields.Tail,
+			}
+			expected := &DoublyLinkedList{}
+			l.addNode(buildNodes(tt.values)...)
+			expected.addNode(buildNodes(tt.expectedList)...)
+			if err := l.Remove(tt.args.obj); (err != nil) != tt.wantErr {
+				t.Errorf("DoublyLinkedList.Remove() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			_, found := l.Find(tt.args.obj)
+			if found {
+				t.Errorf("DobulyLinkedList.Remove() item not removed from list!")
+			}
+			if !reflect.DeepEqual(l, expected) {
+				t.Errorf("DobulyLinkedList.Remove() list contains unexpected values")
+			}
+		})
+	}
+}
+
+func TestDoublyLinkedList_HasNext(t *testing.T) {
+	type fields struct {
+		Current *DoubleNode
+		Head    *DoubleNode
+		Tail    *DoubleNode
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   bool
+	}{
+		{
+			name: "has next",
+			fields: fields{
+				Head: &DoubleNode{
+					Value: model.Object{Value: "first"},
+					Next: &DoubleNode{
+						Value: model.Object{Value: "second"},
+					},
+				},
+				Tail: &DoubleNode{
+					Value: model.Object{Value: "second"},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "no next",
+			fields: fields{
+				Head: &DoubleNode{
+					Value: model.Object{Value: "first"},
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := &DoublyLinkedList{
+				Current: tt.fields.Current,
+				Head:    tt.fields.Head,
+				Tail:    tt.fields.Tail,
+			}
+			if got := l.HasNext(); got != tt.want {
+				t.Errorf("DoublyLinkedList.HasNext() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDoublyLinkedList_HasPrevious(t *testing.T) {
+	type fields struct {
+		Current *DoubleNode
+		Head    *DoubleNode
+		Tail    *DoubleNode
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   bool
+	}{
+		{
+			name: "has previous",
+			fields: fields{
+				Head: &DoubleNode{
+					Value: model.Object{Value: "first"},
+					Next: &DoubleNode{
+						Value: model.Object{Value: "second"},
+					},
+				},
+				Tail: &DoubleNode{
+					Value: model.Object{Value: "second"},
+					Previous: &DoubleNode{
+						Value: model.Object{Value: "first"},
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "no previous",
+			fields: fields{
+				Head: &DoubleNode{
+					Value: model.Object{Value: "first"},
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := &DoublyLinkedList{
+				Current: tt.fields.Current,
+				Head:    tt.fields.Head,
+				Tail:    tt.fields.Tail,
+			}
+			if got := l.HasPrevious(); got != tt.want {
+				t.Errorf("DoublyLinkedList.HasPrevious() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

@@ -65,12 +65,20 @@ func (l *DoublyLinkedList) AddTail(obj model.Object) {
 
 // Find :: func :: find an object in the list
 func (l *DoublyLinkedList) Find(obj model.Object) (model.Object, bool) {
-	current := l.Head
-	for current != nil {
-		if reflect.DeepEqual(current.Value, obj) {
-			return current.Value, true
+	l.Current = l.Head
+	// More than one, so iterate
+	for l.HasNext() {
+		if reflect.DeepEqual(l.Current.Value, obj) {
+			return l.Current.Value, true
 		}
-		current = current.Next
+		l.Current = l.Current.Next
+	}
+	// List is a single Node
+	// OR we're on the last Node
+	if l.Current.Next == nil {
+		if reflect.DeepEqual(l.Current.Value, obj) {
+			return l.Current.Value, true
+		}
 	}
 	return model.Object{}, false
 }
@@ -84,8 +92,20 @@ func (l *DoublyLinkedList) Remove(obj model.Object) error {
 		return errors.New("object not in list")
 	}
 	node := l.Current
-	node.Previous.Next = node.Next
-	node.Next.Previous = node.Previous
+	if node == l.Head {
+		// Removing the Head
+		l.Head = node.Next
+		l.Head.Previous = nil
+	} else if node == l.Tail {
+		// Removing the Tail
+		l.Tail = node.Previous
+		l.Tail.Next = nil
+	} else {
+		// Removing a link
+		node.Previous.Next = node.Next
+		node.Next.Previous = node.Previous
+	}
+	l.Current = l.Head
 	return nil
 }
 
@@ -97,8 +117,12 @@ func (l *DoublyLinkedList) HasNext() bool {
 		// If true, then check if Head is nil
 		if l.Head != nil {
 			l.Current = l.Head
+		} else if l.Tail != nil {
+			// Nil Head, have Tail
+			l.Current = l.Tail
+			l.Head = l.Tail
 		} else {
-			// No Head or Current, list must be empty
+			// No Head, Tail or Current, list must be empty
 			return false
 		}
 	}
@@ -113,6 +137,9 @@ func (l *DoublyLinkedList) HasPrevious() bool {
 		// If true, then check if Head is nil
 		if l.Tail != nil {
 			l.Current = l.Tail
+		} else if l.Head != nil {
+			l.Current = l.Head
+			l.Tail = l.Head
 		} else {
 			// No Tail or Current, list must be empty
 			return false
@@ -141,10 +168,12 @@ func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
 		l.Head = l.Tail
 		l.Current = l.Head
 	}
+	// Current has been set, iterate to add Nodes
 	for i, node := range n {
 		if i == 0 && l.Current == nil {
 			// Set current if list is empty
 			l.Current = node
+			l.Head = node
 			continue
 		} else {
 			node.Previous = l.Current
@@ -158,10 +187,11 @@ func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
 		// Set Tail if last node in the list
 		// We're not adding anywhere at the end;
 		// what we've added must be the Tail
-		if i == len(n)-1 {
-			l.Tail = node
-		}
+		// if i == len(n)-1 {
+		// 	l.Tail = node
+		// }
 	}
+	l.Tail = l.Current
 }
 
 func (l DoublyLinkedList) checkHeadTail() {
