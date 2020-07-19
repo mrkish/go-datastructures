@@ -124,16 +124,22 @@ func (l *DoublyLinkedList) HasPrevious() bool {
 // Helper function to build list or add new nodes to existing list
 func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
 	// Determine position in list before iterating
-	if l.Current == nil && l.Head != nil {
-		l.Current = l.Head
-	} else if l.Head != nil && l.Current == nil {
-		l.Head = l.Current
+	if l.Head != nil && l.Tail != nil {
+		l.checkHeadTail()
+		l.Current = l.Tail
+		// If Head and Tail are set but not connected
+	} else if l.Current == nil && l.Head != nil {
+		l.checkHeadTail()
+		// Advance to last item in list
+		for l.HasNext() {
+		}
+		if l.Tail == nil {
+			l.Tail = l.Current
+			l.Current = l.Tail
+		}
 	} else if l.Head == nil && l.Tail != nil {
 		l.Head = l.Tail
 		l.Current = l.Head
-	} else if l.Head != nil && l.Tail != nil {
-		// Start at the end of the list
-		l.Current = l.Tail
 	}
 	for i, node := range n {
 		if i == 0 && l.Current == nil {
@@ -155,5 +161,12 @@ func (l *DoublyLinkedList) addNode(n ...*DoubleNode) {
 		if i == len(n)-1 {
 			l.Tail = node
 		}
+	}
+}
+
+func (l DoublyLinkedList) checkHeadTail() {
+	if l.Head != nil && l.Head.Next == nil && l.Tail != nil {
+		l.Head.Next = l.Tail
+		l.Tail.Previous = l.Head
 	}
 }

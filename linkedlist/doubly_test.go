@@ -143,15 +143,15 @@ func TestDoublyLinkedList_AddTail(t *testing.T) {
 		},
 		{
 			name: "tail replaces existing successfully, links stay connected",
-			nodes: []*DoubleNode{
-				{Value: model.Object{Value: "first"}},
-				{Value: model.Object{Value: "last"}},
-			},
-			wantNodes: []*DoubleNode{
-				{Value: model.Object{Value: "first"}},
-				{Value: model.Object{Value: "last"}},
-				{Value: model.Object{Value: "newLast"}},
-			},
+			nodes: buildNodes([]string{
+				"first",
+				"last",
+			}),
+			wantNodes: buildNodes([]string{
+				"first",
+				"second",
+				"third",
+			}),
 			value: "newLast",
 		},
 	}
@@ -189,67 +189,61 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 		Head    *DoubleNode
 		Tail    *DoubleNode
 	}
-	type args struct {
-		n []*DoubleNode
-	}
 	tests := []struct {
 		name   string
 		fields fields
-		args   args
+		values []string
 	}{
 		{
 			name: "list is built with all nodes connected",
-			args: args{
-				n: []*DoubleNode{
-					{
-						Value: model.Object{
-							Value: "first",
-						},
-					},
-					{
-						Value: model.Object{
-							Value: "second",
-						},
-					},
-					{
-						Value: model.Object{
-							Value: "third",
-						},
-					},
-					{
-						Value: model.Object{
-							Value: "fourth",
-						},
-					},
-				},
+			values: []string{
+				"first",
+				"second",
+				"third",
+				"fourth",
 			},
 		},
 		{
-			name: "existing list is added on to as expected",
+			name: "existing list without current set",
 			fields: fields{
 				Current: nil,
 				Head: &DoubleNode{
 					Value: model.Object{Value: "first"},
 				},
 			},
-			args: args{
-				n: []*DoubleNode{
-					{
-						Value: model.Object{
-							Value: "second",
-						},
-					},
-					{
-						Value: model.Object{
-							Value: "third",
-						},
-					},
-					{
-						Value: model.Object{
-							Value: "fourth",
-						},
-					},
+			values: []string{
+				"second",
+				"third",
+				"fourth",
+			},
+		},
+		{
+			name: "existing list with set head and tail",
+			fields: fields{
+				Current: nil,
+				Head: &DoubleNode{
+					Value: model.Object{Value: "first"},
 				},
+				Tail: &DoubleNode{
+					Value: model.Object{Value: "second"},
+				},
+			},
+			values: []string{
+				"third",
+				"fourth",
+			},
+		},
+		{
+			name: "existing list with unset head and tail",
+			fields: fields{
+				Current: nil,
+				Tail: &DoubleNode{
+					Value: model.Object{Value: "first"},
+				},
+			},
+			values: []string{
+				"second",
+				"third",
 			},
 		},
 	}
@@ -260,14 +254,14 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 				Head:    tt.fields.Head,
 				Tail:    tt.fields.Tail,
 			}
-			l.addNode(tt.args.n...)
+			l.addNode(buildNodes(tt.values)...)
 			i := 0
 			for l.HasNext() {
 				var previous model.Object
 				var next model.Object
 				if l.Current.Previous != nil {
 					previous = l.Current.Previous.Value
-					wantPrevious := tt.args.n[i-1].Value.Value
+					wantPrevious := tt.values[i-1]
 					if previous.Value != wantPrevious {
 						t.Errorf("addNode() mismatched values: previous: %v, expected: %v", previous.Value, wantPrevious)
 					}
@@ -275,8 +269,8 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 				if l.Current.Next != nil {
 					next = l.Current.Next.Value
 					var wantNext interface{}
-					if i+1 > len(tt.args.n) {
-						wantNext = tt.args.n[i+1].Value.Value
+					if i+1 > len(tt.values) {
+						wantNext = tt.values[i+1]
 					}
 					if next.Value == wantNext {
 						t.Errorf("addNode() mismatched values: next: %v, expected: %v", next.Value, wantNext)
@@ -286,4 +280,12 @@ func TestDoublyLinkedList_addNode(t *testing.T) {
 			}
 		})
 	}
+}
+
+func buildNodes(in []string) []*DoubleNode {
+	var out []*DoubleNode
+	for _, val := range in {
+		out = append(out, &DoubleNode{Value: model.Object{Value: val}})
+	}
+	return out
 }
