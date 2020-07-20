@@ -17,6 +17,11 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 		found  bool
 	}{
 		{
+			name:   "empty list returns false",
+			search: "last",
+			found:  false,
+		},
+		{
 			name: "value not found",
 			values: []string{
 				"first",
@@ -287,6 +292,13 @@ func TestDoublyLinkedList_Remove(t *testing.T) {
 		args         args
 		wantErr      bool
 	}{
+		{
+			name: "empty list returns error",
+			args: args{
+				obj: model.Object{Value: "second"},
+			},
+			wantErr: true,
+		},
 		{
 			name: "middle link is removed",
 			values: []string{

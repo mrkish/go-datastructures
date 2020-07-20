@@ -18,6 +18,11 @@ func TestSinglyLinkedList_Find(t *testing.T) {
 		found  bool
 	}{
 		{
+			name:   "empty list returns false",
+			search: "last",
+			found:  false,
+		},
+		{
 			name: "value not found",
 			values: []string{
 				"first",
@@ -120,6 +125,11 @@ func TestSinglyLinkedList_Remove(t *testing.T) {
 		nextValue string
 		wantErr   bool
 	}{
+		{
+			name:    "empty list returns error",
+			value:   "third",
+			wantErr: true,
+		},
 		{
 			name: "node not found: error",
 			fields: fields{
