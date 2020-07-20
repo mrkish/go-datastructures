@@ -19,6 +19,7 @@ type Node struct {
 	Next  *Node
 }
 
+// NewSinglyLinked :: func :: Returns a pointer to a new SinglyLinkedList
 func NewSinglyLinked(values ...string) (l *SinglyLinkedList) {
 	l = &SinglyLinkedList{}
 	if values != nil || len(values) > 0 {
@@ -95,7 +96,7 @@ func (l *SinglyLinkedList) HasNext() bool {
 	return current.Next != nil
 }
 
-// Helper function to build list or add new nodes to existing list
+// AddNode :: func :: Helper function to build list or add new nodes to existing list
 func (l *SinglyLinkedList) AddNode(n ...*Node) {
 	// Determine position in list before iterating
 	if l.Current == nil {
@@ -121,6 +122,7 @@ func (l *SinglyLinkedList) AddNode(n ...*Node) {
 	}
 }
 
+// BuildSingleNodes :: func :: Helper function to build Nodes
 func BuildSingleNodes(in []string) []*Node {
 	var out []*Node
 	for _, val := range in {

@@ -21,6 +21,7 @@ type DoubleNode struct {
 	Previous *DoubleNode
 }
 
+// NewDoublyLinked :: func :: Returns a pointer to a new DoublyLinkedList
 func NewDoublyLinked(values ...string) (l *DoublyLinkedList) {
 	l = &DoublyLinkedList{}
 	if values != nil || len(values) > 0 {
@@ -155,7 +156,7 @@ func (l *DoublyLinkedList) HasPrevious() bool {
 	return l.Current.Previous != nil
 }
 
-// Helper function to build list or add new nodes to existing list
+// AddNode :: func :: Helper function to build list or add new nodes to existing list
 func (l *DoublyLinkedList) AddNode(n ...*DoubleNode) {
 	// Determine position in list before iterating
 	if l.Head != nil && l.Tail != nil {
@@ -197,17 +198,18 @@ func (l *DoublyLinkedList) AddNode(n ...*DoubleNode) {
 	l.Tail = l.Current
 }
 
-func (l DoublyLinkedList) checkHeadTail() {
-	if l.Head != nil && l.Head.Next == nil && l.Tail != nil {
-		l.Head.Next = l.Tail
-		l.Tail.Previous = l.Head
-	}
-}
-
+// BuildDoubleNodes :: func :: Helper function to wrap values into Nodes
 func BuildDoubleNodes(in []string) []*DoubleNode {
 	var out []*DoubleNode
 	for _, val := range in {
 		out = append(out, &DoubleNode{Value: model.Object{Value: val}})
 	}
 	return out
+}
+
+func (l DoublyLinkedList) checkHeadTail() {
+	if l.Head != nil && l.Head.Next == nil && l.Tail != nil {
+		l.Head.Next = l.Tail
+		l.Tail.Previous = l.Head
+	}
 }
