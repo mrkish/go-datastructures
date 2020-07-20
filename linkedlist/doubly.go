@@ -21,6 +21,14 @@ type DoubleNode struct {
 	Previous *DoubleNode
 }
 
+func NewDoublyLinked(values ...string) (l *DoublyLinkedList) {
+	l = &DoublyLinkedList{}
+	if values != nil || len(values) > 0 {
+		l.AddNode(BuildDoubleNodes(values)...)
+	}
+	return l
+}
+
 // AddHead :: func :: Adds a new node to the LinkedList
 // - Previous Head still points towards it's own Next
 // - Previous Head.Previous points to new Head

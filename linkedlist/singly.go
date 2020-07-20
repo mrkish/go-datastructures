@@ -19,6 +19,14 @@ type Node struct {
 	Next  *Node
 }
 
+func NewSinglyLinked(values ...string) (l *SinglyLinkedList) {
+	l = &SinglyLinkedList{}
+	if values != nil || len(values) > 0 {
+		l.AddNode(BuildSingleNodes(values)...)
+	}
+	return l
+}
+
 // Add :: func :: Adds a new node to the LinkedList at the Head
 // - Previous Head still points towards it's own Next
 // - New Node being added to the front has the Next point towards the previous Head (in constructor)
