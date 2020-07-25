@@ -26,6 +26,11 @@ func (b BST) Remove(obj model.Object) (bool, error) {
 	return removed, nil
 }
 
+func (b BST) Find(obj model.Object) (*Node, error) {
+	return b.Root.Find(b.Root, obj)
+
+}
+
 // NodeFunc :: func :: Some function that takes in  model.Object
 // and does an operation on the stored value, with no return.
 type NodeFunc func(obj model.Object)
@@ -48,20 +53,33 @@ type Node struct {
 	Right *Node
 }
 
+func (n Node) Find(parent *Node, obj model.Object) (*Node, error) {
+	match := n.Value.Value == obj.Value
+	if match {
+		return &n, nil
+	}
+	if less(obj, n.Value) && n.Left != nil {
+		return n.Left.Find(&n, obj)
+	} else if n.Right != nil {
+		return n.Right.Find(&n, obj)
+	}
+	return nil, nil
+}
+
 func (n Node) Add(obj model.Object) {
-	if less(n.Value, obj) {
-		if n.Left == nil {
-			n.Left = &Node{Value: obj}
+	if less(obj, n.Value) {
+		if n.Right == nil {
+			n.Right = &Node{Value: obj}
 			return
 		}
-		n.Left.Add(obj)
+		n.Right.Add(obj)
 		return
 	}
-	if n.Right == nil {
-		n.Right = &Node{Value: obj}
+	if n.Left == nil {
+		n.Left = &Node{Value: obj}
 		return
 	}
-	n.Right.Add(obj)
+	n.Left.Add(obj)
 }
 
 func (n Node) Remove(obj model.Object) bool {
@@ -87,5 +105,5 @@ func (n *Node) GoRight(f NodeFunc) *Node {
 }
 
 func less(o1, o2 model.Object) bool {
-	return len(o1.Value) > len(o2.Value)
+	return len(o1.Value) < len(o2.Value)
 }
