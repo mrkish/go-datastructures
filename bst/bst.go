@@ -15,7 +15,13 @@ type BST struct {
 // placement of new nodes being decided by the length of the
 // incoming string. Nice and arbitrary.
 func (b BST) Add(obj model.Object) {
-	b.Root.Add(obj)
+	if b.Root != nil {
+		b.Root.Add(obj)
+		return
+	}
+	b.Root = &Node{
+		Value: obj,
+	}
 }
 
 func (b BST) Remove(obj model.Object) (bool, error) {
@@ -26,7 +32,7 @@ func (b BST) Remove(obj model.Object) (bool, error) {
 	return removed, nil
 }
 
-func (b BST) Find(obj model.Object) (*Node, error) {
+func (b BST) Find(obj model.Object) (*Node, bool) {
 	return b.Root.Find(b.Root, obj)
 
 }
@@ -53,17 +59,17 @@ type Node struct {
 	Right *Node
 }
 
-func (n Node) Find(parent *Node, obj model.Object) (*Node, error) {
+func (n Node) Find(parent *Node, obj model.Object) (*Node, bool) {
 	match := n.Value.Value == obj.Value
 	if match {
-		return &n, nil
+		return &n, true
 	}
 	if less(obj, n.Value) && n.Left != nil {
 		return n.Left.Find(&n, obj)
 	} else if n.Right != nil {
 		return n.Right.Find(&n, obj)
 	}
-	return nil, nil
+	return nil, false
 }
 
 func (n Node) Add(obj model.Object) {
