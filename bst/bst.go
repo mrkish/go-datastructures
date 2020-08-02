@@ -14,13 +14,14 @@ type BST struct {
 // Add :: func :: This will add in strings, with the left/right
 // placement of new nodes being decided by the length of the
 // incoming string. Nice and arbitrary.
-func (b BST) Add(obj model.Object) {
+func (b *BST) Add(obj model.Object) {
 	if b.Root != nil {
 		b.Root.Add(obj)
 		return
-	}
-	b.Root = &Node{
-		Value: obj,
+	} else {
+		b.Root = &Node{
+			Value: obj,
+		}
 	}
 }
 
@@ -72,7 +73,11 @@ func (n Node) Find(parent *Node, obj model.Object) (*Node, bool) {
 	return nil, false
 }
 
-func (n Node) Add(obj model.Object) {
+func (n *Node) Add(obj model.Object) {
+	if n.Value.Value == "" {
+		n.Value = obj
+		return
+	}
 	if less(obj, n.Value) {
 		if n.Right == nil {
 			n.Right = &Node{Value: obj}

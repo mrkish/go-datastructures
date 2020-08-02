@@ -6,41 +6,88 @@ import (
 	"testing"
 )
 
-// func TestBST_Add(t *testing.T) {
-// 	type fields struct {
-// 		Root *Node
-// 	}
-// 	type args struct {
-// 		obj model.Object
-// 	}
-// 	tests := []struct {
-// 		name   string
-// 		fields fields
-// 		args   args
-// 	}{
-// 		{
-// 			name: "sucessful add",
-// 			args: args{
-// 				obj: model.Object{Value: "first"},
-// 			},
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			b := BST{
-// 				Root: tt.fields.Root,
-// 			}
-// 			b.Add(tt.args.obj)
-// 			if node, found := b.Find(tt.args.obj); !found {
-// 				t.Errorf("Add() failed to find object in BST after Add() call")
-// 			} else {
-// 				if node.Value.Value != tt.args.obj.Value {
-// 					t.Errorf("Add() item added to BST doesn't match added value, got: %s", node.Value.Value)
-// 				}
-// 			}
-// 		})
-// 	}
-// }
+func TestBST_Add(t *testing.T) {
+	type fields struct {
+		Root *Node
+	}
+	type args struct {
+		obj model.Object
+	}
+	tests := []struct {
+		name          string
+		fields        fields
+		args          args
+		expectedLeft  string
+		expectedRight string
+	}{
+		{
+			name: "first call to add creates a root if it is not present",
+			args: args{
+				obj: model.Object{Value: "first"},
+			},
+		},
+		{
+			name: "call to Add() with a non-nil root saves the value in Root",
+			fields: fields{
+				Root: &Node{},
+			},
+			args: args{
+				obj: model.Object{Value: "first"},
+			},
+		},
+		{
+			name: "call to Add() places left node correctly",
+			fields: fields{
+				Root: &Node{
+					Value: model.Object{Value: "first"},
+				},
+			},
+			args: args{
+				obj: model.Object{Value: "two"},
+			},
+			expectedLeft: "two",
+		},
+		{
+			name: "call to Add() places left node correctly",
+			fields: fields{
+				Root: &Node{
+					Value: model.Object{Value: "first"},
+				},
+			},
+			args: args{
+				obj: model.Object{Value: "quaternary"},
+			},
+			expectedRight: "quaternary",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := BST{
+				Root: tt.fields.Root,
+			}
+			b.Add(tt.args.obj)
+			if node, found := b.Find(tt.args.obj); !found {
+				t.Errorf("Add() failed to find object in BST after Add() call")
+			} else {
+				if node.Value.Value != tt.args.obj.Value {
+					t.Errorf("Add() item added to BST doesn't match added value, got: %s", node.Value.Value)
+				}
+			}
+			if tt.expectedRight != "" {
+				if (b.Root.Right != nil) && b.Root.Right.Value.Value != tt.expectedRight {
+					t.Errorf("Add() BST did not place value as expected, Right: %s, got: %s",
+						tt.expectedRight, b.Root.Right.Value.Value)
+				}
+			}
+			if tt.expectedLeft != "" {
+				if (b.Root.Left != nil) && b.Root.Left.Value.Value != tt.expectedLeft {
+					t.Errorf("Add() BST did not place value as expected, Left: %s, got: %s",
+						tt.expectedLeft, b.Root.Left.Value.Value)
+				}
+			}
+		})
+	}
+}
 
 func TestBST_Find(t *testing.T) {
 	type fields struct {
