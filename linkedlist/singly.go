@@ -87,6 +87,9 @@ func (l *SinglyLinkedList) HasNext() bool {
 	// Check if Current isn't set
 	if l.Current == nil {
 		l.Current = l.Head
+		if l.Current != nil {
+			return l.Current.Next != nil
+		}
 	}
 	current := l.Current
 	// Advance Current if Next isn't nil
