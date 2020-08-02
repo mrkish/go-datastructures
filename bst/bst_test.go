@@ -120,6 +120,30 @@ func TestBST_Find(t *testing.T) {
 			want:      &Node{Value: model.Object{Value: "two"}},
 			wantFound: true,
 		},
+		{
+			name: "find goes through multiple levels to find expected match",
+			fields: fields{
+				Root: &Node{
+					Value: model.Object{
+						Value: "first",
+					},
+					Left: &Node{
+						Value: model.Object{Value: "two"},
+					},
+					Right: &Node{
+						Value: model.Object{Value: "secondary"},
+						Left: &Node{
+							Value: model.Object{Value: "seconda"},
+						},
+					},
+				},
+			},
+			args: args{
+				model.Object{Value: "seconda"},
+			},
+			want:      &Node{Value: model.Object{Value: "seconda"}},
+			wantFound: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
