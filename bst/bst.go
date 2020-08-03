@@ -78,7 +78,7 @@ func (n *Node) Add(obj model.Object) {
 		n.Value = obj
 		return
 	}
-	if less(obj, n.Value) {
+	if less(n.Value, obj) {
 		if n.Right == nil {
 			n.Right = &Node{Value: obj}
 			return

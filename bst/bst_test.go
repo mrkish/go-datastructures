@@ -17,8 +17,8 @@ func TestBST_Add(t *testing.T) {
 		name          string
 		fields        fields
 		args          args
-		expectedLeft  string
-		expectedRight string
+		expectedLeft  *model.Object
+		expectedRight *model.Object
 	}{
 		{
 			name: "first call to add creates a root if it is not present",
@@ -45,10 +45,10 @@ func TestBST_Add(t *testing.T) {
 			args: args{
 				obj: model.Object{Value: "two"},
 			},
-			expectedLeft: "two",
+			expectedLeft: &model.Object{Value: "two"},
 		},
 		{
-			name: "call to Add() places left node correctly",
+			name: "call to Add() places right node correctly",
 			fields: fields{
 				Root: &Node{
 					Value: model.Object{Value: "first"},
@@ -57,7 +57,19 @@ func TestBST_Add(t *testing.T) {
 			args: args{
 				obj: model.Object{Value: "quaternary"},
 			},
-			expectedRight: "quaternary",
+			expectedRight: &model.Object{Value: "quaternary"},
+		},
+		{
+			name: "call to Add() places right node correctly",
+			fields: fields{
+				Root: &Node{
+					Value: model.Object{Value: "primary"},
+				},
+			},
+			args: args{
+				obj: model.Object{Value: "two"},
+			},
+			expectedLeft: &model.Object{Value: "two"},
 		},
 	}
 	for _, tt := range tests {
@@ -73,17 +85,17 @@ func TestBST_Add(t *testing.T) {
 					t.Errorf("Add() item added to BST doesn't match added value, got: %s", node.Value.Value)
 				}
 			}
-			if tt.expectedRight != "" {
-				if (b.Root.Right != nil) && b.Root.Right.Value.Value != tt.expectedRight {
-					t.Errorf("Add() BST did not place value as expected, Right: %s, got: %s",
-						tt.expectedRight, b.Root.Right.Value.Value)
-				}
+			if tt.expectedRight == nil && b.Root.Right != nil {
+				t.Errorf("Add() unexpected Right leaf")
 			}
-			if tt.expectedLeft != "" {
-				if (b.Root.Left != nil) && b.Root.Left.Value.Value != tt.expectedLeft {
-					t.Errorf("Add() BST did not place value as expected, Left: %s, got: %s",
-						tt.expectedLeft, b.Root.Left.Value.Value)
-				}
+			if (tt.expectedRight != nil && b.Root.Right != nil) && b.Root.Right.Value.Value != tt.expectedRight.Value {
+				t.Errorf("Add() Right value does not match expected, got %s, want %s", b.Root.Right.Value.Value, tt.expectedRight.Value)
+			}
+			if tt.expectedLeft == nil && b.Root.Left != nil {
+				t.Errorf("Add() unexpected Left leaf")
+			}
+			if (tt.expectedLeft != nil && b.Root.Left != nil) && b.Root.Left.Value.Value != tt.expectedLeft.Value {
+				t.Errorf("Add() Left value does not match expected, got %s, want %s", b.Root.Left.Value.Value, tt.expectedLeft.Value)
 			}
 		})
 	}
