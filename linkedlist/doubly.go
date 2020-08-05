@@ -73,32 +73,39 @@ func (l *DoublyLinkedList) AddTail(obj model.Object) {
 }
 
 // Find :: func :: find an object in the list
-func (l *DoublyLinkedList) Find(obj model.Object) bool {
+func (l *DoublyLinkedList) Find(obj model.Object) (model.Object, bool) {
+	if node, found := l.FindNode(obj); found {
+		return node.Value, true
+	}
+	return model.Object{}, false
+}
+
+func (l *DoublyLinkedList) FindNode(obj model.Object) (*DoubleNode, bool) {
 	l.Current = l.Head
 	if l.Current == nil {
-		return false
+		return nil, false
 	}
 	// Check first element manually, since HasNext will advance Current
 	if firstMatch := reflect.DeepEqual(l.Current.Value, obj); firstMatch {
-		return firstMatch
+		return l.Current, firstMatch
 	}
 	// Iterate through rest of list
 	for l.HasNext() {
 		if reflect.DeepEqual(l.Current.Value, obj) {
-			return true
+			return l.Current, true
 		}
 	}
-	return false
+	return nil, false
 }
 
 // Remove :: func :: find an object in the list
 // This implementation gets to be simpler because the reference to the Previous
 // is kept in the DoubleNode struct.
 func (l *DoublyLinkedList) Remove(obj model.Object) error {
-	if found := l.Find(obj); !found {
+	node, found := l.FindNode(obj)
+	if !found {
 		return errors.New("object not in list")
 	}
-	node := l.Current
 	if node == l.Head {
 		// Removing the Head
 		l.Head = node.Next

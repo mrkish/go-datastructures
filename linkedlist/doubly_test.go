@@ -60,7 +60,7 @@ func TestDoublyLinkedList_Find(t *testing.T) {
 			l := &DoublyLinkedList{}
 			l.AddNode(BuildDoubleNodes(tt.values)...)
 			obj := model.Object{Value: tt.search}
-			found := l.Find(obj)
+			_, found := l.Find(obj)
 			if found != tt.found {
 				t.Error("DoublyLinkedList.Find() item not found in list")
 			}
@@ -356,7 +356,7 @@ func TestDoublyLinkedList_Remove(t *testing.T) {
 			if err := l.Remove(tt.args.obj); (err != nil) != tt.wantErr {
 				t.Errorf("DoublyLinkedList.Remove() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			found := l.Find(tt.args.obj)
+			_, found := l.Find(tt.args.obj)
 			if found {
 				t.Errorf("DobulyLinkedList.Remove() item not removed from list!")
 			}

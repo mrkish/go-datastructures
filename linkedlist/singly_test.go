@@ -62,8 +62,7 @@ func TestSinglyLinkedList_Find(t *testing.T) {
 			l := &SinglyLinkedList{}
 			l.AddNode(BuildSingleNodes(tt.values)...)
 			obj := model.Object{Value: tt.search}
-			var found bool
-			if found = l.Find(obj); found != tt.found {
+			if _, found := l.Find(obj); found != tt.found {
 				t.Errorf("SinglyLinkedList.Find() object not found in list")
 			}
 		})
@@ -103,7 +102,8 @@ func TestSinglyLinkedList_Add(t *testing.T) {
 				Head:    tt.fields.Head,
 			}
 			l.Add(tt.args.obj)
-			if !l.Find(tt.args.obj) {
+			_, found := l.Find(tt.args.obj)
+			if !found {
 				t.Errorf("SinglyLinkedList.Add() failure = %v not found after call to Add()", tt.args.obj.Value)
 			}
 		})
@@ -188,11 +188,13 @@ func TestSinglyLinkedList_Remove(t *testing.T) {
 			if err := l.Remove(obj); (err != nil) != tt.wantErr {
 				t.Errorf("SinglyLinkedList.Remove() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if l.Find(obj) {
+			_, found := l.Find(obj)
+			if found {
 				t.Errorf("Remove() did not remove item expected; found in list")
 			}
 			if tt.nextValue != "" {
-				if l.Find(nextObj) {
+				_, found := l.Find(nextObj)
+				if found {
 					t.Errorf("Remove() broke the links in the chain; missing next: %v", nextObj)
 				}
 			}

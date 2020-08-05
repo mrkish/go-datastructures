@@ -42,22 +42,29 @@ func (l *SinglyLinkedList) Add(obj model.Object) {
 }
 
 // Find :: func :: Find an object in the list
-func (l *SinglyLinkedList) Find(obj model.Object) bool {
+func (l *SinglyLinkedList) Find(obj model.Object) (model.Object, bool) {
+	if _, found := l.FindNode(obj); found {
+		return l.Current.Value, found
+	}
+	return model.Object{}, false
+}
+
+func (l *SinglyLinkedList) FindNode(obj model.Object) (*Node, bool) {
 	l.Current = l.Head
 	if l.Current == nil {
-		return false
+		return nil, false
 	}
 	// Check first element manually, since HasNext will advance Current
 	if firstMatch := reflect.DeepEqual(l.Current.Value, obj); firstMatch {
-		return firstMatch
+		return l.Current, firstMatch
 	}
 	// Iterate through rest of list
 	for l.HasNext() {
 		if reflect.DeepEqual(l.Current.Value, obj) {
-			return true
+			return l.Current, true
 		}
 	}
-	return false
+	return nil, false
 }
 
 // Remove :: func :: Remove an object from the list
