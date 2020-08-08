@@ -54,7 +54,8 @@ func TestQueue_Dequeue(t *testing.T) {
 				t.Errorf("Queue.Dequeue() = %v, want %v", got, tt.want)
 			}
 			if tt.want.Value != "" {
-				if q.List.Find(tt.want) {
+				_, found := q.List.Find(tt.want)
+				if found {
 					t.Error("Stack.Pop() popped item not removed from stack")
 				}
 			}

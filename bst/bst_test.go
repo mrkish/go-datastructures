@@ -256,3 +256,87 @@ func TestNode_Find(t *testing.T) {
 		})
 	}
 }
+
+func TestBST_Remove(t *testing.T) {
+	type fields struct {
+		Root *Node
+	}
+	type args struct {
+		obj model.Object
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		{
+			name: "value matches root",
+			args: args{
+				obj: model.Object{Value: "root"},
+			},
+			fields: fields{
+				Root: &Node{Value: model.Object{"root"}},
+			},
+			want: true,
+		},
+		{
+			name: "value doesn't match root",
+			args: args{
+				obj: model.Object{Value: "root"},
+			},
+			fields: fields{
+				Root: &Node{Value: model.Object{"notRoot"}},
+			},
+			want:    false,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := BST{
+				Root: tt.fields.Root,
+			}
+			got, err := b.Remove(tt.args.obj)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("BST.Remove() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("BST.Remove() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNode_Remove(t *testing.T) {
+	type fields struct {
+		Value model.Object
+		Left  *Node
+		Right *Node
+	}
+	type args struct {
+		obj model.Object
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			n := Node{
+				Value: tt.fields.Value,
+				Left:  tt.fields.Left,
+				Right: tt.fields.Right,
+			}
+			if got := n.Remove(tt.args.obj); got != tt.want {
+				t.Errorf("Node.Remove() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

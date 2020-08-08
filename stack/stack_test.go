@@ -56,7 +56,8 @@ func TestStack_Pop(t *testing.T) {
 				t.Errorf("Stack.Pop() = %v, want %v", got, tt.want)
 			}
 			if tt.want.Value != "" {
-				if s.List.Find(tt.want) {
+				_, found := s.List.Find(tt.want)
+				if found {
 					t.Error("Stack.Pop() popped item not removed from stack")
 				}
 			}

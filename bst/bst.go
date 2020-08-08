@@ -35,7 +35,6 @@ func (b BST) Remove(obj model.Object) (bool, error) {
 
 func (b BST) Find(obj model.Object) (*Node, bool) {
 	return b.Root.Find(b.Root, obj)
-
 }
 
 // NodeFunc :: func :: Some function that takes in  model.Object
