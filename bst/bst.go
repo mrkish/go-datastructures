@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	root  = 0
-	left  = 1
-	right = 2
+	root  = iota
+	left 
+	right
 )
 
 // BST :: struct :: Gives Root a home, and a place
@@ -119,15 +119,26 @@ func (n *Node) Add(obj model.Object) {
 
 // Remove :: func :: Removes any matching nodes
 func (n Node) Remove(parent *Node, side int, obj model.Object) bool {
+	if n.
 	switch side {
 	case root:
 		match := parent.Value.Value == n.Value.Value
 		if !match {
-			return false
+			less := less(n, obj)
+			if less {
+				return n.Remove(n.Left, left, obj)
+			}
+			return n.Remove(n.Right, right, obj)
 		}
 		n.Value.Value = ""
 	case left:
 		if match := n.Value.Value == obj.Value; !match {
+			if n.Left != nil {
+				return n.Remove(n, left, obj)
+			}
+			if n.Left != nil {
+				return n.Remove(n, left, obj)
+			}
 			return false
 		}
 	case right:
