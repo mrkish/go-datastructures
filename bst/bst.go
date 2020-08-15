@@ -5,6 +5,12 @@ import (
 	"go-datastructures/model"
 )
 
+const (
+	root  = 0
+	left  = 1
+	right = 2
+)
+
 // BST :: struct :: Gives Root a home, and a place
 // for calling the various iteration methods from.
 type BST struct {
@@ -26,7 +32,7 @@ func (b *BST) Add(obj model.Object) {
 }
 
 func (b BST) Remove(obj model.Object) (bool, error) {
-	removed := b.Root.Remove(obj)
+	removed := b.Root.Remove(b.Root, root, obj)
 	if !removed {
 		return removed, errors.New("object not found in list")
 	}
@@ -41,16 +47,34 @@ func (b BST) Find(obj model.Object) (*Node, bool) {
 // and does an operation on the stored value, with no return.
 type NodeFunc func(obj model.Object)
 
+// PreOrder :: func :: Processes current node, then left, the right
 func (b BST) PreOrder(f NodeFunc) {
-
+	if b.Root == nil {
+		return
+	}
+	f(b.Root.Value)
+	b.Root.GoLeft(f)
+	b.Root.GoRight(f)
 }
 
+// InOrder :: func :: Processes left, current node, the right
 func (b BST) InOrder(f NodeFunc) {
-
+	if b.Root == nil {
+		return
+	}
+	b.Root.GoLeft(f)
+	f(b.Root.Value)
+	b.Root.GoRight(f)
 }
 
+// PostOrder :: func :: Processes left, the right, current node
 func (b BST) PostOrder(f NodeFunc) {
-
+	if b.Root == nil {
+		return
+	}
+	b.Root.GoLeft(f)
+	b.Root.GoRight(f)
+	f(b.Root.Value)
 }
 
 type Node struct {
@@ -72,6 +96,7 @@ func (n Node) Find(parent *Node, obj model.Object) (*Node, bool) {
 	return nil, false
 }
 
+// Add :: func :: Adds a new node
 func (n *Node) Add(obj model.Object) {
 	if n.Value.Value == "" {
 		n.Value = obj
@@ -92,8 +117,25 @@ func (n *Node) Add(obj model.Object) {
 	n.Left.Add(obj)
 }
 
-func (n Node) Remove(obj model.Object) bool {
-
+// Remove :: func :: Removes any matching nodes
+func (n Node) Remove(parent *Node, side int, obj model.Object) bool {
+	switch side {
+	case root:
+		match := parent.Value.Value == n.Value.Value
+		if !match {
+			return false
+		}
+		n.Value.Value = ""
+	case left:
+		if match := n.Value.Value == obj.Value; !match {
+			return false
+		}
+	case right:
+		if match := n.Value.Value == obj.Value; !match {
+			return false
+		}
+	default:
+	}
 	return true
 }
 
