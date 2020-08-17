@@ -22,7 +22,7 @@ type Node struct {
 // NewSinglyLinked :: func :: Returns a pointer to a new SinglyLinkedList
 func NewSinglyLinked(values ...string) (l *SinglyLinkedList) {
 	l = &SinglyLinkedList{}
-	if values != nil || len(values) > 0 {
+	if values != nil && len(values) > 0 {
 		l.AddNode(BuildSingleNodes(values)...)
 	}
 	return l

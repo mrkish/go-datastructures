@@ -74,9 +74,6 @@ func TestDoublyLinkedList_AddHead(t *testing.T) {
 		Head    *DoubleNode
 		Tail    *DoubleNode
 	}
-	type args struct {
-		obj model.Object
-	}
 	tests := []struct {
 		name   string
 		fields fields
@@ -98,9 +95,8 @@ func TestDoublyLinkedList_AddHead(t *testing.T) {
 				Tail:    tt.fields.Tail,
 			}
 			obj := model.Object{Value: tt.value}
-			var err error
 			l.AddHead(obj)
-			if err == nil && !reflect.DeepEqual(l.Head.Value, obj) {
+			if !reflect.DeepEqual(l.Head.Value, obj) {
 				t.Errorf("DoublyLinkedList.AddHead() Head doens't match expected | head: %v | expected: %v", l.Head.Value, obj)
 			}
 		})
@@ -112,9 +108,6 @@ func TestDoublyLinkedList_AddTail(t *testing.T) {
 		Current *DoubleNode
 		Head    *DoubleNode
 		Tail    *DoubleNode
-	}
-	type args struct {
-		obj model.Object
 	}
 	tests := []struct {
 		name      string

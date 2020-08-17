@@ -11,8 +11,7 @@ const (
 	right
 )
 
-// BST :: struct :: Gives Root a home, and a place
-// for calling the various processing methods from.
+// BST :: struct :: Basic Binary Search Tree implementation.
 type BST struct {
 	Root *Node
 }

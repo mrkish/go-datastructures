@@ -24,7 +24,7 @@ type DoubleNode struct {
 // NewDoublyLinked :: func :: Returns a pointer to a new DoublyLinkedList
 func NewDoublyLinked(values ...string) (l *DoublyLinkedList) {
 	l = &DoublyLinkedList{}
-	if values != nil || len(values) > 0 {
+	if values != nil && len(values) > 0 {
 		l.AddNode(BuildDoubleNodes(values)...)
 	}
 	return l

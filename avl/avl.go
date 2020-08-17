@@ -11,8 +11,7 @@ const (
 	right
 )
 
-// AVL :: struct :: Gives Root a home, and a place
-// for calling the various processing methods from.
+// AVL :: struct :: Self-balancing BST.
 type AVL struct {
 	Root    *Node
 	Height  int
@@ -64,7 +63,7 @@ func (a AVL) RightLeftRotate() {
 	// TODO
 }
 
-// Remove :: func :: Removes a object/value from the AVL. Returns an error if the value is not in the AVL
+// Remove :: func :: Removes a object/value from the AVL. Returns an error if the value is not in the AVL.
 func (a AVL) Remove(obj model.Object) (bool, error) {
 	removed := a.Root.remove(a.Root, root, obj)
 	if !removed {
