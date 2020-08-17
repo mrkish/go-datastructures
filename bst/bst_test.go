@@ -1,9 +1,16 @@
 package bst
 
 import (
+	"fmt"
 	"go-datastructures/model"
 	"reflect"
 	"testing"
+)
+
+var (
+	rootVal  = model.Object{Value: "root"}
+	rightVal = model.Object{Value: "right"}
+	leftVal  = model.Object{Value: "le"}
 )
 
 func TestBST_Add(t *testing.T) {
@@ -246,7 +253,7 @@ func TestNode_Find(t *testing.T) {
 				Left:  tt.fields.Left,
 				Right: tt.fields.Right,
 			}
-			got, got1 := n.Find(tt.args.obj)
+			got, got1 := n.find(tt.args.obj)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Node.Find() got = %v, want %v", got, tt.want)
 			}
@@ -311,9 +318,6 @@ func TestBST_Remove(t *testing.T) {
 }
 
 func TestNode_Remove(t *testing.T) {
-	rootVal := model.Object{Value: "root"}
-	rightVal := model.Object{Value: "right"}
-	leftVal := model.Object{Value: "le"}
 	type fields struct {
 		Value model.Object
 		Left  *Node
@@ -479,10 +483,10 @@ func TestNode_Remove(t *testing.T) {
 				Left:  tt.fields.Left,
 				Right: tt.fields.Right,
 			}
-			if got := n.Remove(tt.args.parent, tt.args.side, tt.args.obj); got != tt.want {
+			if got := n.remove(tt.args.parent, tt.args.side, tt.args.obj); got != tt.want {
 				t.Errorf("Node.Remove() = %v, want %v", got, tt.want)
 			}
-			_, found := n.Find(tt.args.obj)
+			_, found := n.find(tt.args.obj)
 			if tt.want == true && found {
 				t.Errorf("Node.Remove() value still found in tree after Remove()")
 			}
@@ -491,12 +495,174 @@ func TestNode_Remove(t *testing.T) {
 				case "nil":
 					// TODO:
 				default:
-					_, foundChild := n.Find(model.Object{Value: tt.wantChild})
+					_, foundChild := n.find(model.Object{Value: tt.wantChild})
 					if !foundChild {
 						t.Errorf("Node.Remove() expected child not found in tree after Remove()")
 					}
 				}
 			}
+		})
+	}
+}
+
+func TestBST_PreOrder(t *testing.T) {
+	type fields struct {
+		Root *Node
+	}
+	type args struct {
+		f NodeFunc
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "pre-order: root is called first",
+			fields: fields{
+				Root: &Node{
+					Value: rootVal,
+					Left: &Node{
+						Value: model.Object{Value: "le"},
+						Left: &Node{
+							Value: model.Object{Value: "l"},
+						},
+						Right: &Node{
+							Value: model.Object{Value: "lef"},
+						},
+					},
+					Right: &Node{
+						Value: model.Object{Value: "right"},
+						Left: &Node{
+							Value: model.Object{Value: "righ"},
+						},
+						Right: &Node{
+							Value: model.Object{Value: "righter"},
+						},
+					},
+				},
+			},
+			args: args{
+				f: func(v model.Object) {
+					fmt.Println(v.Value)
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := BST{
+				Root: tt.fields.Root,
+			}
+			b.PreOrder(tt.args.f)
+		})
+	}
+}
+
+func TestBST_InOrder(t *testing.T) {
+	type fields struct {
+		Root *Node
+	}
+	type args struct {
+		f NodeFunc
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "in-order: root is called mid-way",
+			fields: fields{
+				Root: &Node{
+					Value: rootVal,
+					Left: &Node{
+						Value: model.Object{Value: "le"},
+						Left: &Node{
+							Value: model.Object{Value: "l"},
+						},
+						Right: &Node{
+							Value: model.Object{Value: "lef"},
+						},
+					},
+					Right: &Node{
+						Value: model.Object{Value: "right"},
+						Left: &Node{
+							Value: model.Object{Value: "righ"},
+						},
+						Right: &Node{
+							Value: model.Object{Value: "righter"},
+						},
+					},
+				},
+			},
+			args: args{
+				f: func(v model.Object) {
+					fmt.Println(v.Value)
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := BST{
+				Root: tt.fields.Root,
+			}
+			b.InOrder(tt.args.f)
+		})
+	}
+}
+
+func TestBST_PostOrder(t *testing.T) {
+	type fields struct {
+		Root *Node
+	}
+	type args struct {
+		f NodeFunc
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "post-order: root is called last",
+			fields: fields{
+				Root: &Node{
+					Value: rootVal,
+					Left: &Node{
+						Value: model.Object{Value: "le"},
+						Left: &Node{
+							Value: model.Object{Value: "l"},
+						},
+						Right: &Node{
+							Value: model.Object{Value: "lef"},
+						},
+					},
+					Right: &Node{
+						Value: model.Object{Value: "right"},
+						Left: &Node{
+							Value: model.Object{Value: "righ"},
+						},
+						Right: &Node{
+							Value: model.Object{Value: "righter"},
+						},
+					},
+				},
+			},
+			args: args{
+				f: func(v model.Object) {
+					fmt.Println(v.Value)
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := BST{
+				Root: tt.fields.Root,
+			}
+			b.PostOrder(tt.args.f)
 		})
 	}
 }
