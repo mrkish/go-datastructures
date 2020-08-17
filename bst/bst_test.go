@@ -487,9 +487,14 @@ func TestNode_Remove(t *testing.T) {
 				t.Errorf("Node.Remove() value still found in tree after Remove()")
 			}
 			if tt.wantChild != "" {
-				_, foundChild := n.Find(model.Object{Value: tt.wantChild})
-				if !foundChild {
-					t.Errorf("Node.Remove() expected child not found in tree after Remove()")
+				switch tt.wantChild {
+				case "nil":
+					// TODO:
+				default:
+					_, foundChild := n.Find(model.Object{Value: tt.wantChild})
+					if !foundChild {
+						t.Errorf("Node.Remove() expected child not found in tree after Remove()")
+					}
 				}
 			}
 		})
