@@ -246,7 +246,7 @@ func TestNode_Find(t *testing.T) {
 				Left:  tt.fields.Left,
 				Right: tt.fields.Right,
 			}
-			got, got1 := n.Find(tt.args.parent, tt.args.obj)
+			got, got1 := n.Find(tt.args.obj)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Node.Find() got = %v, want %v", got, tt.want)
 			}
@@ -311,12 +311,17 @@ func TestBST_Remove(t *testing.T) {
 }
 
 func TestNode_Remove(t *testing.T) {
+	rootVal := model.Object{Value: "root"}
+	rightVal := model.Object{Value: "right"}
+	leftVal := model.Object{Value: "le"}
 	type fields struct {
 		Value model.Object
 		Left  *Node
 		Right *Node
 	}
 	type args struct {
+		parent *Node
+		side int
 		obj model.Object
 	}
 	tests := []struct {
@@ -325,7 +330,78 @@ func TestNode_Remove(t *testing.T) {
 		args   args
 		want   bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "root is removed",
+			fields: fields{
+				Value: rootVal,
+			},
+			args: args{
+				parent: &Node{Value: rootVal},
+				side: root,
+				obj: rootVal,
+			},
+			want: true,
+		},
+		{
+			name: "right child is removed",
+			fields: fields{
+				Value: rootVal,
+				Right: &Node{Value: rightVal},
+			},
+			args: args{
+				parent: &Node{Value: rightVal},
+				side: root,
+				obj: rightVal,
+			},
+			want: true,
+		},
+		{
+			name: "right child is removed and tree is correctly re-built",
+			fields: fields{
+				Value: rootVal,
+				Right: &Node{
+					Value: rightVal,
+					Left: &Node{Value: model.Object{Value: "righ"}},
+					Right: &Node{Value: model.Object{Value: "righter"}},
+				},
+			},
+			args: args{
+				parent: &Node{Value: rightVal},
+				side: root,
+				obj: rightVal,
+			},
+			want: true,
+		},
+		{
+			name: "left child is removed",
+			fields: fields{
+				Value: rootVal,
+				Left: &Node{Value: leftVal},
+			},
+			args: args{
+				parent: &Node{Value: leftVal},
+				side: root,
+				obj: leftVal,
+			},
+			want: true,
+		},
+		{
+			name: "left child is removed and tree is correctly re-built",
+			fields: fields{
+				Value: rootVal,
+				Left: &Node{
+					Value: leftVal,
+					Left: &Node{Value: model.Object{Value: "l"}},
+					Right: &Node{Value: model.Object{Value: "lef"}},
+				},
+			},
+			args: args{
+				parent: &Node{Value: leftVal},
+				side: root,
+				obj: leftVal,
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -334,8 +410,12 @@ func TestNode_Remove(t *testing.T) {
 				Left:  tt.fields.Left,
 				Right: tt.fields.Right,
 			}
-			if got := n.Remove(tt.args.obj); got != tt.want {
+			if got := n.Remove(tt.args.parent, tt.args.side, tt.args.obj); got != tt.want {
 				t.Errorf("Node.Remove() = %v, want %v", got, tt.want)
+			}
+			_, found := n.Find(tt.args.obj)
+			if tt.want == true && found {
+				t.Errorf("Node.Remove() value still found in tree after Remove()")
 			}
 		})
 	}

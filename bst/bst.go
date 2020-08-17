@@ -40,7 +40,7 @@ func (b BST) Remove(obj model.Object) (bool, error) {
 }
 
 func (b BST) Find(obj model.Object) (*Node, bool) {
-	return b.Root.Find(b.Root, obj)
+	return b.Root.Find(obj)
 }
 
 // NodeFunc :: func :: Some function that takes in  model.Object
@@ -83,15 +83,15 @@ type Node struct {
 	Right *Node
 }
 
-func (n Node) Find(parent *Node, obj model.Object) (*Node, bool) {
+func (n Node) Find(obj model.Object) (*Node, bool) {
 	match := n.Value.Value == obj.Value
 	if match {
 		return &n, true
 	}
 	if less(obj, n.Value) && n.Left != nil {
-		return n.Left.Find(&n, obj)
+		return n.Left.Find(obj)
 	} else if n.Right != nil {
-		return n.Right.Find(&n, obj)
+		return n.Right.Find(obj)
 	}
 	return nil, false
 }
@@ -118,36 +118,56 @@ func (n *Node) Add(obj model.Object) {
 }
 
 // Remove :: func :: Removes any matching nodes
-func (n Node) Remove(parent *Node, side int, obj model.Object) bool {
-	if n.
+func (n *Node) Remove(parent *Node, side int, obj model.Object) bool {
 	switch side {
 	case root:
 		match := parent.Value.Value == n.Value.Value
 		if !match {
-			less := less(n, obj)
+			less := less(n.Value, obj)
 			if less {
-				return n.Remove(n.Left, left, obj)
+				return n.Right != nil && n.Right.Remove(n, right, obj)
 			}
-			return n.Remove(n.Right, right, obj)
+			return n.Left != nil && n.Left.Remove(n, left, obj)
 		}
 		n.Value.Value = ""
+		return true
 	case left:
-		if match := n.Value.Value == obj.Value; !match {
-			if n.Left != nil {
-				return n.Remove(n, left, obj)
-			}
-			if n.Left != nil {
-				return n.Remove(n, left, obj)
-			}
+		if n.Value.Value == "" {
 			return false
 		}
+		// If this is a match for the current node
+		if match := n.Value.Value == obj.Value; match {
+			if n.Left != nil {
+				parent.Left = n.Left
+				n.Left.Right = n.Right
+			} else {
+				parent.Left = n.Right
+			}
+			return true
+		}
+		// Not a match, so return removing any non-nil children
+		return n.Right != nil &&n.Right.Remove(n, right, n.Right.Value) ||
+			n.Left != nil && n.Left.Remove(n, left, n.Left.Value)
 	case right:
-		if match := n.Value.Value == obj.Value; !match {
+		if n.Value.Value == "" {
 			return false
 		}
+		// If this is a match for the current node
+		if match := n.Value.Value == obj.Value; match {
+			if n.Right != nil {
+				parent.Right = n.Right
+				n.Right.Left = n.Left
+			} else {
+				parent.Right = n.Left
+			}
+			return true
+		}
+		// Not a match, so return removing any non-nil children
+		return n.Right != nil &&n.Right.Remove(n, right, n.Right.Value) ||
+			n.Left != nil && n.Left.Remove(n, left, n.Left.Value)
 	default:
 	}
-	return true
+	return false
 }
 
 // Methods used for the various processing Methods on BST
