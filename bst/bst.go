@@ -31,6 +31,7 @@ func (b *BST) Add(obj model.Object) {
 	}
 }
 
+// Remove :: func :: Removes a object/value from the BST. Returns an error if the value is not in the BST
 func (b BST) Remove(obj model.Object) (bool, error) {
 	removed := b.Root.remove(b.Root, root, obj)
 	if !removed {
