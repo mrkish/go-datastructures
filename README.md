@@ -1,0 +1,2 @@
+**Go Data Structures**
+These are implementations based off of a couple Pluralsight courses I'm going through about algorithms and data structures. Since I'm primarily working in Go, and the course is taught in C#, I thought it worthwhile to port the basics over to Go, even if the implementations are naive, as a foundatioon for a working knowledge of the topics and material.
