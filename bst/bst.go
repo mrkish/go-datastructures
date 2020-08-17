@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	root  = iota
-	left 
+	root = iota
+	left
 	right
 )
 
@@ -138,15 +138,17 @@ func (n *Node) Remove(parent *Node, side int, obj model.Object) bool {
 		// If this is a match for the current node
 		if match := n.Value.Value == obj.Value; match {
 			if n.Left != nil {
+				// Promote the left child
 				parent.Left = n.Left
 				n.Left.Right = n.Right
 			} else {
+				// Promote the right child
 				parent.Left = n.Right
 			}
 			return true
 		}
 		// Not a match, so return removing any non-nil children
-		return n.Right != nil &&n.Right.Remove(n, right, n.Right.Value) ||
+		return n.Right != nil && n.Right.Remove(n, right, n.Right.Value) ||
 			n.Left != nil && n.Left.Remove(n, left, n.Left.Value)
 	case right:
 		if n.Value.Value == "" {
@@ -155,15 +157,17 @@ func (n *Node) Remove(parent *Node, side int, obj model.Object) bool {
 		// If this is a match for the current node
 		if match := n.Value.Value == obj.Value; match {
 			if n.Right != nil {
+				// Promote the right child
 				parent.Right = n.Right
 				n.Right.Left = n.Left
 			} else {
+				// Promote the left child
 				parent.Right = n.Left
 			}
 			return true
 		}
 		// Not a match, so return removing any non-nil children
-		return n.Right != nil &&n.Right.Remove(n, right, n.Right.Value) ||
+		return n.Right != nil && n.Right.Remove(n, right, n.Right.Value) ||
 			n.Left != nil && n.Left.Remove(n, left, n.Left.Value)
 	default:
 	}

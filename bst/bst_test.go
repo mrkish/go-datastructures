@@ -321,14 +321,15 @@ func TestNode_Remove(t *testing.T) {
 	}
 	type args struct {
 		parent *Node
-		side int
-		obj model.Object
+		side   int
+		obj    model.Object
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   bool
+		name      string
+		fields    fields
+		args      args
+		want      bool
+		wantChild string
 	}{
 		{
 			name: "root is removed",
@@ -337,8 +338,8 @@ func TestNode_Remove(t *testing.T) {
 			},
 			args: args{
 				parent: &Node{Value: rootVal},
-				side: root,
-				obj: rootVal,
+				side:   root,
+				obj:    rootVal,
 			},
 			want: true,
 		},
@@ -350,8 +351,8 @@ func TestNode_Remove(t *testing.T) {
 			},
 			args: args{
 				parent: &Node{Value: rightVal},
-				side: root,
-				obj: rightVal,
+				side:   root,
+				obj:    rightVal,
 			},
 			want: true,
 		},
@@ -361,27 +362,61 @@ func TestNode_Remove(t *testing.T) {
 				Value: rootVal,
 				Right: &Node{
 					Value: rightVal,
-					Left: &Node{Value: model.Object{Value: "righ"}},
+					Left:  &Node{Value: model.Object{Value: "righ"}},
 					Right: &Node{Value: model.Object{Value: "righter"}},
 				},
 			},
 			args: args{
 				parent: &Node{Value: rightVal},
-				side: root,
-				obj: rightVal,
+				side:   root,
+				obj:    rightVal,
 			},
 			want: true,
+		},
+		{
+			name: "right child is removed and right child is promoted",
+			fields: fields{
+				Value: rootVal,
+				Right: &Node{
+					Value: rightVal,
+					Right: &Node{Value: model.Object{Value: "righter"}},
+				},
+			},
+			args: args{
+				parent: &Node{Value: rightVal},
+				side:   root,
+				obj:    rightVal,
+			},
+			want:      true,
+			wantChild: "righter",
+		},
+		{
+			name: "right child is removed and left child is promoted",
+			fields: fields{
+				Value: rootVal,
+				Right: &Node{
+					Value: rightVal,
+					Left:  &Node{Value: model.Object{Value: "righ"}},
+				},
+			},
+			args: args{
+				parent: &Node{Value: rightVal},
+				side:   root,
+				obj:    rightVal,
+			},
+			want:      true,
+			wantChild: "righ",
 		},
 		{
 			name: "left child is removed",
 			fields: fields{
 				Value: rootVal,
-				Left: &Node{Value: leftVal},
+				Left:  &Node{Value: leftVal},
 			},
 			args: args{
 				parent: &Node{Value: leftVal},
-				side: root,
-				obj: leftVal,
+				side:   root,
+				obj:    leftVal,
 			},
 			want: true,
 		},
@@ -391,16 +426,50 @@ func TestNode_Remove(t *testing.T) {
 				Value: rootVal,
 				Left: &Node{
 					Value: leftVal,
-					Left: &Node{Value: model.Object{Value: "l"}},
+					Left:  &Node{Value: model.Object{Value: "l"}},
 					Right: &Node{Value: model.Object{Value: "lef"}},
 				},
 			},
 			args: args{
 				parent: &Node{Value: leftVal},
-				side: root,
-				obj: leftVal,
+				side:   root,
+				obj:    leftVal,
 			},
 			want: true,
+		},
+		{
+			name: "left child is removed and right child is promoted",
+			fields: fields{
+				Value: rootVal,
+				Left: &Node{
+					Value: leftVal,
+					Right: &Node{Value: model.Object{Value: "lef"}},
+				},
+			},
+			args: args{
+				parent: &Node{Value: leftVal},
+				side:   root,
+				obj:    leftVal,
+			},
+			want:      true,
+			wantChild: "lef",
+		},
+		{
+			name: "left child is removed and left child is promoted",
+			fields: fields{
+				Value: rootVal,
+				Left: &Node{
+					Value: leftVal,
+					Left:  &Node{Value: model.Object{Value: "l"}},
+				},
+			},
+			args: args{
+				parent: &Node{Value: leftVal},
+				side:   root,
+				obj:    leftVal,
+			},
+			want:      true,
+			wantChild: "l",
 		},
 	}
 	for _, tt := range tests {
@@ -416,6 +485,12 @@ func TestNode_Remove(t *testing.T) {
 			_, found := n.Find(tt.args.obj)
 			if tt.want == true && found {
 				t.Errorf("Node.Remove() value still found in tree after Remove()")
+			}
+			if tt.wantChild != "" {
+				_, foundChild := n.Find(model.Object{Value: tt.wantChild})
+				if !foundChild {
+					t.Errorf("Node.Remove() expected child not found in tree after Remove()")
+				}
 			}
 		})
 	}
