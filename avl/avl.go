@@ -1,4 +1,4 @@
-package bst
+package avl
 
 import (
 	"errors"
@@ -11,37 +11,70 @@ const (
 	right
 )
 
-// BST :: struct :: Gives Root a home, and a place
+// AVL :: struct :: Gives Root a home, and a place
 // for calling the various processing methods from.
-type BST struct {
-	Root *Node
+type AVL struct {
+	Root    *Node
+	Height  int
+	LHeight int
+	RHeight int
 }
 
 // Add :: func :: This will add in strings, with the left/right
 // placement of new nodes being decided by the length of the
 // incoming string. Nice and arbitrary.
-func (b *BST) Add(obj model.Object) {
-	if b.Root != nil {
-		b.Root.add(obj)
+func (a *AVL) Add(obj model.Object) {
+	if a.Root != nil {
+		switch a.Root.add(obj) {
+		case root:
+			a.Height++
+		case left:
+			a.Height++
+			a.LHeight++
+		case right:
+			a.Height++
+			a.RHeight++
+		}
 		return
 	} else {
-		b.Root = &Node{
+		a.Root = &Node{
 			Value: obj,
 		}
+		a.Height++
 	}
 }
 
-// Remove :: func :: Removes a object/value from the BST. Returns an error if the value is not in the BST
-func (b BST) Remove(obj model.Object) (bool, error) {
-	removed := b.Root.remove(b.Root, root, obj)
+func (a AVL) Balance() {
+	// TODO
+}
+
+func (a AVL) LeftRotate() {
+	// TODO
+}
+
+func (a AVL) LeftRightRotate() {
+	// TODO
+}
+
+func (a AVL) RightRotate() {
+	// TODO
+}
+
+func (a AVL) RightLeftRotate() {
+	// TODO
+}
+
+// Remove :: func :: Removes a object/value from the AVL. Returns an error if the value is not in the AVL
+func (a AVL) Remove(obj model.Object) (bool, error) {
+	removed := a.Root.remove(a.Root, root, obj)
 	if !removed {
 		return removed, errors.New("object not found in list")
 	}
 	return removed, nil
 }
 
-func (b BST) Find(obj model.Object) (*Node, bool) {
-	return b.Root.find(obj)
+func (a AVL) Find(obj model.Object) (*Node, bool) {
+	return a.Root.find(obj)
 }
 
 // NodeFunc :: func :: Some function that takes in  model.Object
@@ -49,36 +82,37 @@ func (b BST) Find(obj model.Object) (*Node, bool) {
 type NodeFunc func(obj model.Object)
 
 // PreOrder :: func :: Processes current, left, right
-func (b BST) PreOrder(f NodeFunc) {
-	if b.Root == nil {
+func (a AVL) PreOrder(f NodeFunc) {
+	if a.Root == nil {
 		return
 	}
-	b.Root.preOrder(f)
+	a.Root.preOrder(f)
 }
 
 // InOrder :: func :: Processes left, current, right
 // Items in the list will be processed in Sort Order
-func (b BST) InOrder(f NodeFunc) {
-	if b.Root == nil {
+func (a AVL) InOrder(f NodeFunc) {
+	if a.Root == nil {
 		return
 	}
-	b.Root.inOrder(f)
+	a.Root.inOrder(f)
 }
 
 // PostOrder :: func :: Processes left, right, current
 // Root will be processed last -- Deletion of the entire tree could be a use case
-func (b BST) PostOrder(f NodeFunc) {
-	if b.Root == nil {
+func (a AVL) PostOrder(f NodeFunc) {
+	if a.Root == nil {
 		return
 	}
-	b.Root.postOrder(f)
+	a.Root.postOrder(f)
 }
 
-// Node :: struct :: Node holds the values for the elements of the BST, and any pointers to child values
+// Node :: struct :: Node holds the values for the elements of the AVL, and any pointers to child values
 type Node struct {
-	Value model.Object
-	Left  *Node
-	Right *Node
+	Value  model.Object
+	Parent *Node
+	Left   *Node
+	Right  *Node
 }
 
 func (n Node) preOrder(f NodeFunc) {
@@ -125,24 +159,25 @@ func (n Node) find(obj model.Object) (*Node, bool) {
 }
 
 // add :: func :: adds a new node
-func (n *Node) add(obj model.Object) {
+func (n *Node) add(obj model.Object) int {
 	if n.Value.Value == "" {
 		n.Value = obj
-		return
+		return root
 	}
 	if less(n.Value, obj) {
 		if n.Right == nil {
 			n.Right = &Node{Value: obj}
-			return
+		} else {
+			n.Right.add(obj)
 		}
-		n.Right.add(obj)
-		return
+		return right
 	}
 	if n.Left == nil {
 		n.Left = &Node{Value: obj}
-		return
+	} else {
+		n.Left.add(obj)
 	}
-	n.Left.add(obj)
+	return left
 }
 
 // remove :: func :: removes any matching nodes
