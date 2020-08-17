@@ -74,6 +74,7 @@ func (b BST) PostOrder(f NodeFunc) {
 	b.Root.postOrder(f)
 }
 
+// Node :: struct :: Node holds the values for the elements of the BST, and any pointers to child values
 type Node struct {
 	Value model.Object
 	Left  *Node
