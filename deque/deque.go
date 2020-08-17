@@ -40,8 +40,8 @@ func (d *Deque) AddLast(obj model.Object) {
 }
 
 // Remove :: func :: Removes a value from the Queue
-func (d *Deque) Remove(obj model.Object) {
-	d.List.Remove(obj)
+func (d *Deque) Remove(obj model.Object) error {
+	return d.List.Remove(obj)
 }
 
 // PeekFirst :: func :: Returns the Deque's current value

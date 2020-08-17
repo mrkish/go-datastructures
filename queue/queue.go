@@ -35,8 +35,8 @@ func (q *Queue) Add(obj model.Object) {
 }
 
 // Remove :: func :: Removes a value from the Queue
-func (q *Queue) Remove(obj model.Object) {
-	q.List.Remove(obj)
+func (q *Queue) Remove(obj model.Object) error {
+	return q.List.Remove(obj)
 }
 
 // Peek :: func :: Returns the Queue's current value

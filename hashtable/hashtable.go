@@ -1,8 +1,10 @@
 package hashtable
 
-type implMap map[string]string
+import "go-datastructures/model"
 
-// Go's maps are HashTables, but to imbed the map[string]string it needed a custom type
+type implMap map[string]model.Object
+
+// Go's maps are HashTables, but to embed the map[string]model.Object it needed a custom type.
 type HashTable struct {
 	implMap
 }

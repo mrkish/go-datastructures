@@ -8,9 +8,6 @@ import (
 // With all of these test cases passing we leverage the method for other tests
 // instead of doing weirdness to account for Nodes being pointers.
 func TestSinglyLinkedList_Find(t *testing.T) {
-	type args struct {
-		value string
-	}
 	tests := []struct {
 		name   string
 		search string
@@ -114,9 +111,6 @@ func TestSinglyLinkedList_Remove(t *testing.T) {
 	type fields struct {
 		Current *Node
 		Head    *Node
-	}
-	type args struct {
-		obj model.Object
 	}
 	tests := []struct {
 		name      string
