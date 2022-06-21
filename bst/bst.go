@@ -12,26 +12,26 @@ const (
 )
 
 // BST :: struct :: Basic Binary Search Tree implementation.
-type BST struct {
-	Root *Node
+type BST[T any] struct {
+	Root *Node[T]
 }
 
 // Add :: func :: This will add in strings, with the left/right
 // placement of new nodes being decided by the length of the
 // incoming string. Nice and arbitrary.
-func (b *BST) Add(obj model.Object) {
+func (b *BST[T]) Add(t T) {
 	if b.Root != nil {
-		b.Root.add(obj)
+		b.Root.add(t)
 		return
 	} else {
-		b.Root = &Node{
-			Value: obj,
+		b.Root = &Node[T]{
+			Value: t,
 		}
 	}
 }
 
 // Remove :: func :: Removes a object/value from the BST. Returns an error if the value is not in the BST
-func (b BST) Remove(obj model.Object) (bool, error) {
+func (b BST[T]) Remove(obj T) (bool, error) {
 	removed := b.Root.remove(b.Root, root, obj)
 	if !removed {
 		return removed, errors.New("object not found in list")
@@ -39,16 +39,16 @@ func (b BST) Remove(obj model.Object) (bool, error) {
 	return removed, nil
 }
 
-func (b BST) Find(obj model.Object) (*Node, bool) {
+func (b BST[T]) Find(obj T) (*Node[T], bool) {
 	return b.Root.find(obj)
 }
 
 // NodeFunc :: func :: Some function that takes in  model.Object
 // and does an operation on the stored value, with no return.
-type NodeFunc func(obj model.Object)
+type NodeFunc func(t any)
 
 // PreOrder :: func :: Processes current, left, right
-func (b BST) PreOrder(f NodeFunc) {
+func (b BST[T]) PreOrder(f NodeFunc) {
 	if b.Root == nil {
 		return
 	}
@@ -57,7 +57,7 @@ func (b BST) PreOrder(f NodeFunc) {
 
 // InOrder :: func :: Processes left, current, right
 // Items in the list will be processed in Sort Order
-func (b BST) InOrder(f NodeFunc) {
+func (b BST[T]) InOrder(f NodeFunc) {
 	if b.Root == nil {
 		return
 	}
@@ -66,7 +66,7 @@ func (b BST) InOrder(f NodeFunc) {
 
 // PostOrder :: func :: Processes left, right, current
 // Root will be processed last -- Deletion of the entire tree could be a use case
-func (b BST) PostOrder(f NodeFunc) {
+func (b BST[T]) PostOrder(f NodeFunc) {
 	if b.Root == nil {
 		return
 	}
@@ -74,13 +74,13 @@ func (b BST) PostOrder(f NodeFunc) {
 }
 
 // Node :: struct :: Node holds the values for the elements of the BST, and any pointers to child values
-type Node struct {
-	Value model.Object
-	Left  *Node
-	Right *Node
+type Node[T any] struct {
+	Value T
+	Left  *Node[T]
+	Right *Node[T]
 }
 
-func (n Node) preOrder(f NodeFunc) {
+func (n Node[T]) preOrder(f NodeFunc) {
 	f(n.Value)
 	if n.Left != nil {
 		n.Left.preOrder(f)
@@ -90,7 +90,7 @@ func (n Node) preOrder(f NodeFunc) {
 	}
 }
 
-func (n Node) inOrder(f NodeFunc) {
+func (n Node[T]) inOrder(f NodeFunc) {
 	if n.Left != nil {
 		n.Left.inOrder(f)
 	}
@@ -100,7 +100,7 @@ func (n Node) inOrder(f NodeFunc) {
 	}
 }
 
-func (n Node) postOrder(f NodeFunc) {
+func (n Node[T]) postOrder(f NodeFunc) {
 	if n.Left != nil {
 		n.Left.postOrder(f)
 	}
@@ -110,42 +110,42 @@ func (n Node) postOrder(f NodeFunc) {
 	f(n.Value)
 }
 
-func (n Node) find(obj model.Object) (*Node, bool) {
-	match := n.Value.Value == obj.Value
+func (n Node[T]) find(t T) (*Node[T], bool) {
+	match := n.Value.Value == t.Value
 	if match {
 		return &n, true
 	}
-	if less(obj, n.Value) && n.Left != nil {
-		return n.Left.find(obj)
+	if less(t, n.Value) && n.Left != nil {
+		return n.Left.find(t)
 	} else if n.Right != nil {
-		return n.Right.find(obj)
+		return n.Right.find(t)
 	}
 	return nil, false
 }
 
 // add :: func :: adds a new node
-func (n *Node) add(obj model.Object) {
-	if n.Value.Value == "" {
-		n.Value = obj
+func (n *Node[T]) add(t T) {
+	if n.Value == nil {
+		n.Value = t
 		return
 	}
-	if less(n.Value, obj) {
+	if less(n.Value, t) {
 		if n.Right == nil {
-			n.Right = &Node{Value: obj}
+			n.Right = &Node[T]{Value: t}
 			return
 		}
-		n.Right.add(obj)
+		n.Right.add(t)
 		return
 	}
 	if n.Left == nil {
-		n.Left = &Node{Value: obj}
+		n.Left = &Node{Value: t}
 		return
 	}
-	n.Left.add(obj)
+	n.Left.add(t)
 }
 
 // remove :: func :: removes any matching nodes
-func (n *Node) remove(parent *Node, side int, obj model.Object) bool {
+func (n *Node[T]) remove(parent *Node[T], side int, obj T) bool {
 	switch side {
 	case root:
 		match := parent.Value.Value == n.Value.Value
@@ -201,6 +201,7 @@ func (n *Node) remove(parent *Node, side int, obj model.Object) bool {
 	return false
 }
 
-func less(o1, o2 model.Object) bool {
-	return len(o1.Value) < len(o2.Value)
+func less[T any](o1, o2 T) bool {
+	// return len(o1.Value) < len(o2.Value)
+    return false
 }
